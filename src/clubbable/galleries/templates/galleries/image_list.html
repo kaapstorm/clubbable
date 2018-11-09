@@ -6,13 +6,13 @@
     <div class="row">
       {% for image in images %}
       <div class="col-xs-4 col-md-3">
-        <div class="well" style="text-align: center;">
+        <div class="well text-center">
           <a href="{{ image.display.url }}" target="_blank">
             <img src="{{ image.thumbnail.url }}"
                  alt="{{ image }}"
                  class="img-responsive img-thumbnail" /><br/>
-            {{ image }}
           </a>
+          <div class="caption">{{ image }}</div>
         </div>
       </div>
       {% endfor %}
