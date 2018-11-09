@@ -4,13 +4,21 @@
   <div class="container-fluid">
     <div class="row">
       {% for image in images %}
-      <div class="col-md-3">
-        <div class="center-block">
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
           <a href="#">
             <img src="{{ media_url }}{{ image.thumbnail }}"
                  alt="{{ image }}"
                  class="img-responsive img-thumbnail" />
           </a>
+          <div class="caption">
+            <p>Something about this image</p>
+            <p>
+              <a href="#"
+                 class="btn btn-default"
+                 role="button">Tag Members</a>
+            </p>
+          </div>
         </div>
         <p>{{ image }}</p>
       </div>
