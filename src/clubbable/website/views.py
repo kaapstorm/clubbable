@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.template import RequestContext
 from club.utils import get_full_name
 
 
@@ -39,8 +38,8 @@ def dashboard(request):
         return rows
 
     tiles = get_tiles()
-    context = RequestContext(request, {
+    context = {
         'full_name': get_full_name(request.user),
         'rows': get_3_per_row(tiles),
-    })
+    }
     return render(request, 'website/dashboard.html', context)
