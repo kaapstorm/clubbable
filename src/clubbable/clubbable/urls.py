@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import urls as auth_urls, views as auth_views
+from django.urls import path, include
 from markdown import markdown
 import yaml
 from docs import urls as docs_urls
@@ -20,11 +20,12 @@ def _get_login_context():
         'content_html': markdown(data['content_markdown']),
     }
 
+
 # Replace the login url with out own definition that includes the context for
 # the landing page
-auth_urls.urlpatterns[0] = url(
-    r'^login/$',
-    auth_views.login,
+auth_urls.urlpatterns[0] = path(
+    'login/',
+    auth_views.LoginView.as_view(),
     {'extra_context': _get_login_context()},
     name='login'
 )
@@ -32,11 +33,11 @@ auth_urls.urlpatterns[0] = url(
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^$', dashboard, name='dashboard'),
-    url(r'^doc/', include(docs_urls)),
-    url(r'^img/', include(galleries_urls)),
-    url(r'^dropbox/', include(dropbox_urls)),
+    path('', dashboard, name='dashboard'),
+    path('doc/', include(docs_urls)),
+    path('img/', include(galleries_urls)),
+    path('dropbox/', include(dropbox_urls)),
 
-    url(r'^accounts/', include(auth_urls)),
-    url(r'^admin/', include(admin.site.urls)),
+    path('accounts/', include(auth_urls)),
+    path('admin/', admin.site.urls),
 ]

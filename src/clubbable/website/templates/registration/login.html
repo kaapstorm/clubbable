@@ -17,7 +17,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <form class="navbar-form navbar-right"
               method="post"
-              action="{% url 'django.contrib.auth.views.login' %}">
+              action="{% url 'login' %}">
           {% csrf_token %}
           <div class="form-group">
             <input id="id_username"
