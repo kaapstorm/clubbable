@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm -f clubbable.tar.gz
+git archive --format=tar.gz --prefix=clubbable/ HEAD > clubbable.tar.gz
+docker-compose build --build-arg target=development

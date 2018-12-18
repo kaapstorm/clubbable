@@ -1,0 +1,17 @@
+version: "3.6"
+
+services:
+  app:
+    build: .
+    expose:
+      - "8000"
+    command: /usr/local/bin/gunicorn clubbable.wsgi:application -w 2 -b :8000
+
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/clubbable/website/static:/usr/share/nginx/html
+    links:
+      - app:app
