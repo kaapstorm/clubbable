@@ -2,6 +2,10 @@
 settings_development.py
 settings_production.py
 src/clubbable/db.sqlite3
+src/clubbable/static_root
+
+# git archive for Docker image
+clubbable.tar.gz
 
 # Generated documentation
 doc/_build
