@@ -1,7 +1,25 @@
+import yaml
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render
+from markdown import markdown
 from club.utils import get_full_name
+
+
+class LandingView(LoginView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with open(settings.BASE_DIR + '/clubbable/landing_page.yaml') as file:
+            data = yaml.load(file)
+        context.update({
+            'club_name': settings.CLUB_NAME,
+            'heading': data['heading'],
+            'image': data['image'],
+            'content_html': markdown(data['content_markdown']),
+        })
+        return context
 
 
 @login_required
