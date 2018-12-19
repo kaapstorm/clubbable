@@ -2,7 +2,7 @@
 ---
 heading: The Owl Club
 # A path to an image. The path is relative to src/clubbable/website/static/
-image: img/landing_page_owl.png
+image: registration/img/landing_page_owl.png
 # Provide the content of the landing page in Markdown format.
 # For more information about Markdown and syntax, see
 # http://daringfireball.net/projects/markdown/
