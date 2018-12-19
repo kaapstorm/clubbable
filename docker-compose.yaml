@@ -12,6 +12,6 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./src/clubbable/website/static:/usr/share/nginx/html
+      - ./src/clubbable/static_root:/usr/share/nginx/html
     links:
       - app:app

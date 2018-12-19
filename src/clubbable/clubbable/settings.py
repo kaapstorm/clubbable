@@ -146,5 +146,5 @@ MEDIA_URL = 'https://media.example.com/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-STATIC_ROOT = '/var/www/example.com/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 STATIC_URL = 'https://static.example.com/'
