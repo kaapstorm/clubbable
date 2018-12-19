@@ -1,0 +1,63 @@
+{
+  "AWSEBDockerrunVersion": "2",
+  "volumes": [
+    {
+      "name": "settings",
+      "host": {
+        "sourcePath": "/var/app/current/src/clubbable/clubbable/settings"
+      }
+    },
+    {
+      "name": "nginx_conf_d",
+      "host": {
+        "sourcePath": "/var/app/current/docker/nginx/conf.d"
+      }
+    },
+    {
+      "name": "static_root",
+      "host": {
+        "sourcePath": "/var/app/current/src/clubbable/static_root"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "kaapstorm/clubbable:latest",
+      "essential": true,
+      "memory": 128,
+      "mountPoints": [
+        {
+          "sourceVolume": "settings",
+          "containerPath": "/usr/src/clubbable/src/clubbable/clubbable/settings",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "name": "nginx",
+      "image": "nginx",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["app"],
+      "mountPoints": [
+        {
+          "sourceVolume": "nginx_conf_d",
+          "containerPath": "/etc/nginx/conf.d",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "static_root",
+          "containerPath": "/usr/share/nginx/html",
+          "readOnly": true
+        }
+      ]
+    }
+  ]
+}
