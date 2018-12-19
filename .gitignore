@@ -4,8 +4,9 @@ src/clubbable/clubbable/settings/production.py
 src/clubbable/clubbable/db/db.sqlite3
 src/clubbable/static_root
 
-# git archive for Docker image
+# git archive for Docker image and EB
 clubbable.tar.gz
+clubbable-eb.zip
 
 # Generated documentation
 doc/_build
@@ -26,3 +27,7 @@ nosetests.xml
 .pydevproject
 .idea
 
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
