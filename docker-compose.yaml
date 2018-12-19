@@ -3,15 +3,16 @@ version: "3.6"
 services:
   app:
     build: .
-    expose:
-      - "8000"
-    command: /usr/local/bin/gunicorn clubbable.wsgi:application -w 2 -b :8000
+    volumes:
+      - ./src/clubbable/clubbable/settings:/usr/src/clubbable/src/clubbable/clubbable/settings
+      - ./src/clubbable/clubbable/db:/usr/src/clubbable/src/clubbable/clubbable/db
 
   nginx:
-    build: ./docker/nginx
+    image: nginx
     ports:
       - "80:80"
     volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./src/clubbable/static_root:/usr/share/nginx/html
     links:
       - app:app
