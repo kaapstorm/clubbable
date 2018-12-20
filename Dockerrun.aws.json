@@ -25,7 +25,7 @@
       "name": "app",
       "image": "kaapstorm/clubbable:latest",
       "essential": true,
-      "memory": 128,
+      "memory": 512,
       "mountPoints": [
         {
           "sourceVolume": "settings",
