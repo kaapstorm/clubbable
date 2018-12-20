@@ -1,0 +1,33 @@
+#!/bin/bash
+
+BRANCH=`git branch | egrep '^\*' | cut -d\  -f2`
+VERSION=`date +%Y.%m.%d.%H.%M.%S`
+
+if [ "$BRANCH" != "master" ] ; then
+    echo "Check out master and try again."
+    exit 1
+fi
+
+# Delete git archives, if they exist
+rm -f clubbable.tar.gz clubbable-eb.zip
+
+# Build docker image, tag and push
+git archive --format=tar.gz --prefix=clubbable/ HEAD > clubbable.tar.gz
+docker build --tag=clubbable_app:latest .
+docker tag clubbable_app:latest kaapstorm/clubbable:latest
+docker push kaapstorm/clubbable:latest
+
+# Build Elastic Beanstalk artifact
+git archive --format=zip HEAD > clubbable-eb.zip
+workon clubbable
+src/clubbable/manage.py collectstatic --noinput --settings clubbable.settings.production
+zip -r clubbable-eb.zip src/clubbable/static_root
+zip -r clubbable-eb.zip src/clubbable/clubbable/settings
+zip clubbable-eb.zip Dockerrun.aws.json
+
+echo "Pushed kaapstorm/clubbable:latest"
+echo "Built artifact clubbable-eb.zip"
+echo "Deploying clubbable-eb.zip to clubbable-env with label v.$VERSION"
+
+# Deploy
+eb deploy --label=v.$VERSION --staged clubbable-env
