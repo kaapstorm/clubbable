@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BRANCH=`git branch | egrep '^\*' | cut -d\  -f2`
+
+if [ "$BRANCH" != "master" ] ; then
+    echo "Check out master and try again."
+    exit 1
+fi
+
+rm -f clubbable-eb.zip
+git archive --format=zip HEAD > clubbable-eb.zip
+workon clubbable
+src/clubbable/manage.py collectstatic --noinput --settings clubbable.settings.production
+zip -r clubbable-eb.zip src/clubbable/static_root
+zip -r clubbable-eb.zip src/clubbable/clubbable/settings
+zip clubbable-eb.zip Dockerrun.aws.json
