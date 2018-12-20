@@ -150,5 +150,5 @@ MEDIA_URL = 'https://media.example.com/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, 'clubbable', 'static')
 STATIC_URL = 'https://static.example.com/'

@@ -16,7 +16,7 @@
     {
       "name": "static_root",
       "host": {
-        "sourcePath": "/var/app/current/src/clubbable/static_root"
+        "sourcePath": "/var/app/current/src/clubbable/clubbable/static"
       }
     }
   ],
