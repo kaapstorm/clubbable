@@ -5,38 +5,6 @@ import re
 from django.db import models
 
 
-def strip_non_alphanumeric(string):
-    """
-    Strips non-alphanumeric characters
-    """
-    return re.sub(r'\W', '', string)
-
-
-class SetField(models.Field):
-    """
-    Subclass of Field to accommodate MySQL SET field type. 
-    
-    We are really only concerned with reading the value, because we will not 
-    be writing to this database, but the db_type method is nice to have.
-    """
-    def __init__(self, choices, *args, **kwargs):
-        self.max_length = len(','.join([strip_non_alphanumeric(c[0]) 
-                                        for c in choices]))
-        # self.choices = choices
-        super(SetField, self).__init__(*args, **kwargs)
-    
-    def to_python(self, value):
-        return set([x for x in value.split(',')]) 
-    
-    def db_type(self, connection):
-        if connection.settings_dict['ENGINE'] == 'django.db.backends.mysql':
-            return 'SET(%s)' % (','.join(
-                ["'%s'" % (strip_non_alphanumeric(c[0]),) 
-                 for c in self.choices]), )
-        else:
-            return 'VARCHAR(%d)' % (self.max_length, )
-
-
 class Office(models.Model):
     office = models.CharField(max_length=50)
     
@@ -65,7 +33,9 @@ class Member(models.Model):
     initials = models.CharField(max_length=10)
     common_name = models.CharField(max_length=50)
     election_year = models.CharField(max_length=4)
-    interests = SetField(choices=INTEREST_CHOICES)
+    interests = models.CharField(
+        max_length=len(','.join((c[0] for c in INTEREST_CHOICES)))
+    )
     location = models.CharField(max_length=18,
                                 choices=LOCATION_CHOICES)
     honorary_life_member = models.BooleanField(default=False)
