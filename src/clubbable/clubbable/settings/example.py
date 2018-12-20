@@ -21,6 +21,9 @@ CLUB_NAME = "The Pirate's Cove"
 # Title by which to refer to members. None if not applicable
 MEMBER_TITLE = 'Captain'
 
+# Support importing from legacy database
+IMPORT_LEGACY = True
+
 # Details for fetching files from Dropbox
 DROPBOX_APP_KEY = 'app_key'
 DROPBOX_APP_SECRET = 'app_secret'
@@ -55,7 +58,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,11 +72,12 @@ INSTALLED_APPS = (
     'docs',
     'dropboxer',
     'galleries',
-    'import_legacy',
     'import_mdb',
     'mailer',
     'website',
-)
+]
+if IMPORT_LEGACY:
+    INSTALLED_APPS.append('import_legacy')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -112,8 +116,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'clubbable', 'db', 'db.sqlite3'),
-    },
-    'legacy': {
+    }
+}
+if IMPORT_LEGACY:
+    DATABASES['legacy'] = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'club_db',
         'USER': 'club_user',
@@ -121,9 +127,7 @@ DATABASES = {
         'HOST': '',
         'PORT': '',
     }
-}
-
-DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
+    DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
