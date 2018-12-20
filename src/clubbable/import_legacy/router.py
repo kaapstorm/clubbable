@@ -12,7 +12,7 @@ class LegacyDbRouter(object):
 
     def db_for_write(self, model, **hints):
         if model._meta.app_label == 'import_legacy':
-            return 'legacy'
+            return None
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
@@ -22,6 +22,8 @@ class LegacyDbRouter(object):
             obj2._meta.app_label == 'import_legacy'
         ):
             return True
+        elif 'import_legacy' in (obj1._meta.app_label, obj2._meta.app_label):
+            return False
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
