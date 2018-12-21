@@ -1,4 +1,8 @@
+import hashlib
+import hmac
+import json
 import logging
+from django.conf import settings
 from django.contrib import messages
 from django.http import (
     HttpResponseRedirect,
@@ -10,7 +14,7 @@ from django.urls import reverse
 import dropbox.oauth
 from dropboxer.decorators import dropbox_required
 from dropboxer.models import DropboxUser
-from dropboxer.tasks import check_dropbox_user
+from dropboxer.tasks import process_changes
 from dropboxer.utils import get_auth_flow
 
 
@@ -40,9 +44,12 @@ def auth(request):
     except dropbox.oauth.ProviderException as err:
         logger.exception('Error authenticating Dropbox', err)
         return HttpResponseForbidden()
-    dropbox_user, created = DropboxUser.objects.update_or_create(
+    DropboxUser.objects.update_or_create(
         user=request.user,
-        defaults={'access_token': access_token}
+        defaults={
+            'account': user_id,
+            'access_token': access_token
+        }
     )
     messages.success(request, 'Dropbox authentication successful.')
     return HttpResponseRedirect(reverse('dashboard'))
@@ -62,15 +69,56 @@ def check_dropbox(request):
     Schedule Dropbox to be checked, and return to dashboard.
     """
     dropbox_user = DropboxUser.objects.get(user=request.user)
-    check_dropbox_user.delay(dropbox_user)
-    messages.info(request, 'Dropbox is being checked for new files.')
+    process_changes.delay(dropbox_user)
+    messages.info(request, 'Checking Dropbox for changes.')
     return HttpResponseRedirect(reverse('dashboard'))
 
 
 def webhook(request):
     """
-    Dropbox pings this view when files have changed
+    Dropbox notifies this view when files have changed
     """
-    # TODO: Write this.
-    check_dropbox.delay()
-    return HttpResponse('Accepted', content_type='text/plain', status=202)
+    def get_challenge_response(request_):
+        challenge = request_.GET.get('challenge', '')
+        return HttpResponse(challenge, headers={
+            'Content-Type': 'text/plain',
+            'X-Content-Type-Options': 'nosniff',
+        })
+
+    def verify_signature(request_):
+        signature = request_.headers.get('X-Dropbox-Signature')
+        request_hash = hmac.new(
+            settings.DROPBOX_APP_SECRET, request_.body, hashlib.sha256
+        ).hexdigest()
+        return hmac.compare_digest(signature, request_hash)
+
+    if request.method == 'GET':
+        return get_challenge_response(request)
+
+    if request.method == 'POST':
+        if not verify_signature(request):
+            return HttpResponseForbidden()
+
+        # Sample value of request.body:
+        #
+        #     {
+        #         "list_folder": {
+        #             "accounts": [
+        #                 "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc",
+        #                 ...
+        #             ]
+        #         },
+        #         "delta": {
+        #             "users": [
+        #                 12345678,
+        #                 23456789,
+        #                 ...
+        #             ]
+        #         }
+        #     }
+        notification = json.loads(request.body)
+        for account in notification['list_folder']['accounts']:
+            dropbox_user = DropboxUser.objects.get_or_none(account=account)
+            if dropbox_user:
+                process_changes(dropbox_user).delay()
+        return HttpResponse('Accepted', content_type='text/plain', status=202)
