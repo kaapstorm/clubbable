@@ -6,5 +6,5 @@ urlpatterns = [
     url(r'^connect/$', connect, name='dropbox_connect'),
     url(r'^auth/$', auth, name='dropbox_auth'),
     url(r'^logout/$', dropbox_logout, name='dropbox_logout'),
-    url(r'^dropbox/$', webhook, name='dropbox_webhook'),
+    url(r'^webhook/$', webhook, name='dropbox_webhook'),
 ]
