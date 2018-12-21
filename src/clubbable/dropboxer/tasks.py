@@ -1,50 +1,70 @@
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
 from celery import shared_task
-from dropboxer.models import DropboxUser
+from django.conf import settings
+from dropbox import Dropbox
+from dropbox.files import DeletedMetadata, FileMetadata
+from import_mdb.import_mdb import import_mdb
 
 
-def check_galleries(user):
-    """
-    Downloads images from folders with the same name as a gallery
-    """
-    # TODO: ...
-    pass
+@contextmanager
+def lock_dropbox_user(dropbox_user):
+    dropbox_user.is_locked = True
+    dropbox_user.save()
+    try:
+        yield
+    finally:
+        dropbox_user.is_locked = False
+        dropbox_user.save()
 
 
-def check_docs(user):
-    """
-    Downloads documents from folders with the same name as a documents folder
-    """
-    # TODO: ...
-    pass
+def is_mdb_file(entry):
+    return (
+        settings.MDB_FILENAME and
+        isinstance(entry, FileMetadata) and
+        entry.name == settings.MDB_FILENAME
+    )
 
 
-def check_mdb(user):
-    """
-
-    :param user:
-    :return:
-    """
-    pass
-
-
-@shared_task
-def check_dropbox_user(user):
-    """
-    Check Dropbox for a Dropbox user.
-
-    This task can be queued by a user, or can be called synchronously by
-    check_dropbox()
-    """
-    check_galleries(user)
-    check_docs(user)
-    check_mdb(user)
+@contextmanager
+def get_tmp_file_name(data):
+    tmp_file = NamedTemporaryFile()
+    tmp_file.write(data)
+    try:
+        yield tmp_file.name
+    finally:
+        tmp_file.close()
 
 
 @shared_task
-def check_dropbox():
+def process_changes(dropbox_user):
     """
-    Traverse clubbable folders on Dropbox and if new files are found, import
-    them
+    Call /files/list_folder for the given DropboxUser and process any
+    changes.
     """
-    for user in DropboxUser.objects.exclude(access_token=''):
-        check_dropbox_user(user)
+    if dropbox_user.is_locked:
+        return
+
+    with lock_dropbox_user(dropbox_user):
+        cursor = None
+        dbx = Dropbox(dropbox_user.access_token)
+        has_more = True
+
+        while has_more:
+            if cursor is None:
+                result = dbx.files_list_folder(path='')
+            else:
+                result = dbx.files_list_folder_continue(cursor)
+
+            for entry in result.entries:
+                if isinstance(entry, DeletedMetadata):
+                    # Ignore deleted files
+                    continue
+
+                if is_mdb_file(entry):
+                    _, response = dbx.files_download(entry.path_lower)
+                    with get_tmp_file_name(response.content) as mdb_filename:
+                        import_mdb(mdb_filename)
+
+            cursor = result.cursor
+            has_more = result.has_more

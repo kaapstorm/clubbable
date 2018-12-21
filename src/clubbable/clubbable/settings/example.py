@@ -27,6 +27,9 @@ MEMBER_TITLE = 'Captain'
 # Support importing from legacy database
 IMPORT_LEGACY = True
 
+# Filename of club's Access database, or `None` to disable
+MDB_FILENAME = 'club.mdb'
+
 # Details for fetching files from Dropbox
 DROPBOX_APP_KEY = 'app_key'
 DROPBOX_APP_SECRET = 'app_secret'
