@@ -21,6 +21,9 @@ class Gallery(models.Model):
         related_name='poster_gallery', null=True, blank=True
     )
 
+    class Meta:
+        verbose_name_plural = 'galleries'
+
     def __str__(self):
         return '%s' % self.name
 
