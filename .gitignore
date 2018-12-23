@@ -3,6 +3,7 @@ src/clubbable/clubbable/settings/development.py
 src/clubbable/clubbable/settings/production.py
 src/clubbable/clubbable/db/db.sqlite3
 src/clubbable/clubbable/static
+src/clubbable/clubbable/media
 
 # git archive for Docker image and EB
 clubbable.tar.gz
