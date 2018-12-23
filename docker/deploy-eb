@@ -2,11 +2,23 @@
 
 VERSION=`date +%Y.%m.%d.%H.%M.%S`
 
-# Build docker image, tag and push
-#docker/build-prod-image
+while [[ $# -gt 0 ]]
+do
+    key="$1"
 
-# Build Elastic Beanstalk artifact
-#docker/build-eb-artifact
+    case $key in
+        -i|--build-image)
+        # Build docker image, tag and push
+        docker/build-prod-image
+        shift
+        ;;
+        -a|--build-artifact)
+        # Build Elastic Beanstalk artifact
+        docker/build-eb-artifact
+        shift
+        ;;
+    esac
+done
 
 echo "Deploying clubbable-eb.zip to clubbable-env with label v.$VERSION"
 eb deploy --label=v.$VERSION --staged clubbable-env
