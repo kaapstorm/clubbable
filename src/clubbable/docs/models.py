@@ -1,4 +1,12 @@
+import datetime
+import posixpath
 from django.db import models
+
+
+def _get_upload_path(instance, filename):
+    upload_to = 'doc/{folder}/%Y/%m/'.format(folder=instance.folder)
+    dirname = datetime.datetime.now().strftime(upload_to)
+    return posixpath.join(dirname, filename)
 
 
 class Folder(models.Model):
@@ -11,7 +19,7 @@ class Folder(models.Model):
 class Document(models.Model):
     folder = models.ForeignKey(Folder, models.PROTECT)
     description = models.CharField(max_length=255, blank=True)
-    file = models.FileField(upload_to='doc/%Y/%m/')
+    file = models.FileField(upload_to=_get_upload_path)
 
     def __str__(self):
         return self.description or self.filename

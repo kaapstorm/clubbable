@@ -1,8 +1,16 @@
+import datetime
+import posixpath
 from itertools import chain
 from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill, ResizeToFit
 from club.models import Meeting, Member, Guest
+
+
+def _get_upload_path(instance, filename):
+    upload_to = 'img/{gallery}/%Y/%m/'.format(gallery=instance.gallery)
+    dirname = datetime.datetime.now().strftime(upload_to)
+    return posixpath.join(dirname, filename)
 
 
 class Gallery(models.Model):
@@ -31,7 +39,7 @@ class Image(models.Model):
         related_name='creator_image', null=True, blank=True,
     )
 
-    original = models.ImageField(upload_to='img/%Y/%m/')
+    original = models.ImageField(upload_to=_get_upload_path)
     display = ImageSpecField(source='original',
                              processors=[ResizeToFit(600, 370)],
                              format='JPEG',
