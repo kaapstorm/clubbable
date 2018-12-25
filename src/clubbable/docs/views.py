@@ -13,9 +13,16 @@ from website.views import ClubbableContextMixin
 class DocList(ListView, ClubbableContextMixin):
     context_object_name = 'docs'
 
+    def get_folder(self):
+        return get_object_or_404(Folder, pk=self.kwargs['folder_id'])
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['folder'] = self.get_folder()
+        return context_data
+
     def get_queryset(self):
-        folder = get_object_or_404(Folder, pk=self.args[0])
-        return Document.objects.filter(folder=folder)
+        return self.get_folder().document_set.all()
 
 
 def send(request, folder_id, pk):

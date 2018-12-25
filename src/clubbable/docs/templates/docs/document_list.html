@@ -4,8 +4,7 @@
   <table class="table table-hover">
     <thead>
       <tr>
-        <td>Document</td>
-        <td>Download</td>
+        <td>{{ folder }}</td>
         {% if user.is_staff %}
         <td>Send</td>
         {% endif %}
@@ -14,11 +13,8 @@
     <tbody>
       {% for doc in docs %}
       <tr>
-        <td><i class="far fa-file-{{ doc.doc_type }}"></i> {{ doc }}</td>
-        <td>
-          <a href="{% url 'doc_download' doc.folder.id doc.id doc.filename %}">
-            <i class="fas fa-download"></i>
-          </a>
+        <td><i class="far fa-file-{{ doc.doc_type }}"></i>
+          <a href="{% url 'doc_download' doc.folder.id doc.id doc.filename %}">{{ doc }}</a>
         </td>
         {% if user.is_staff %}
         <td>
