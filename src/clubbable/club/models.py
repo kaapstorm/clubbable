@@ -228,3 +228,15 @@ class Profile(models.Model):
 
 
 post_save.connect(Profile.create_profile, sender=User)
+
+
+def get_full_name(user):
+    member = user.profile.member
+    if member:
+        return '%s' % member
+    full_name = user.get_full_name()
+    if full_name:
+        return full_name
+    if user.email:
+        return user.email
+    return user.username
