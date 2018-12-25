@@ -35,8 +35,8 @@ class Image(models.Model):
         Meeting, models.SET_NULL,
         null=True, blank=True,
     )
-    members = models.ManyToManyField(Member, null=True, blank=True)
-    guests = models.ManyToManyField(Guest, null=True, blank=True)
+    members = models.ManyToManyField(Member, blank=True)
+    guests = models.ManyToManyField(Guest, blank=True)
     creator = models.ForeignKey(
         Member, models.SET_NULL,
         related_name='creator_image', null=True, blank=True,
