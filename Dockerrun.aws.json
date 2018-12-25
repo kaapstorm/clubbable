@@ -22,10 +22,23 @@
   ],
   "containerDefinitions": [
     {
+      "name": "rabbit",
+      "image": "rabbitmq",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 5672,
+          "containerPort": 5672
+        }
+      ]
+    },
+    {
       "name": "app",
       "image": "kaapstorm/clubbable:latest",
       "essential": true,
       "memory": 512,
+      "links": ["rabbit"],
       "mountPoints": [
         {
           "sourceVolume": "settings",

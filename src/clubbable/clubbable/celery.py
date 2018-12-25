@@ -1,16 +1,12 @@
 import os
 from celery import Celery
-from django.conf import settings
 
-# set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clubbable.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clubbable.settings.example')
 
-app = Celery('clubbable', backend='amqp', broker='amqp://')
+app = Celery('clubbable')
 
-# Using a string here means the worker will not have to
-# pickle the object when using Windows.
-app.config_from_object('django.conf:settings')
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks()
 
 
 @app.task(bind=True)

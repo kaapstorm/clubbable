@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_celery_results',
     'imagekit',
 
     'club',
@@ -152,3 +153,6 @@ MEDIA_URL = 'https://media.example.com/'
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'clubbable', 'static')
 STATIC_URL = 'https://static.example.com/'
+
+CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbit:5672//'
