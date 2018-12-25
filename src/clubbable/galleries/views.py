@@ -8,5 +8,5 @@ class ImageList(ListView, ClubbableContextMixin):
     context_object_name = 'images'
 
     def get_queryset(self):
-        gallery = get_object_or_404(Gallery, pk=self.args[0])
+        gallery = get_object_or_404(Gallery, pk=self.kwargs['gallery_id'])
         return Image.objects.filter(gallery=gallery)
