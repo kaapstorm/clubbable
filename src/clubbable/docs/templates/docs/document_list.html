@@ -1,33 +1,34 @@
+{% extends "website/authenticated_base.html" %}
 
-    {% block container %}
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <td>Document</td>
-          <td><i class="fa fa-download fa-lg"></i></td>
-          {% if user.is_staff %}
-          <td><i class="fa fa-envelope-o fa-lg"></i></td>
-          {% endif %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for doc in docs %}
-        <tr>
-          <td><i class="fa fa-{{ doc.doc_type }} fa-lg"></i> {{ doc }}</td>
-          <td>
-            <a href="{% url 'doc_download' doc.folder.id doc.id doc.filename %}">
-              <i class="fa fa-download fa-lg"></i>
-            </a>
-          </td>
-          {% if user.is_staff %}
-          <td>
-            <a href="{% url 'doc_send' doc.folder.id doc.id %}">
-              <i class="fa fa-envelope-o fa-lg"></i>
-            </a>
-          </td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endblock %}
+{% block container %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <td>Document</td>
+        <td>Download</td>
+        {% if user.is_staff %}
+        <td>Send</td>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in docs %}
+      <tr>
+        <td><i class="fa fa-{{ doc.doc_type }} fa-lg"></i> {{ doc }}</td>
+        <td>
+          <a href="{% url 'doc_download' doc.folder.id doc.id doc.filename %}">
+            <i class="fa fa-download fa-lg"></i>
+          </a>
+        </td>
+        {% if user.is_staff %}
+        <td>
+          <a href="{% url 'doc_send' doc.folder.id doc.id %}">
+            <i class="fa fa-envelope-o fa-lg"></i>
+          </a>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
