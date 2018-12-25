@@ -13,15 +13,13 @@
     {% endfor %}
     {% endif %}
 
-    {% for row in rows %}
     <div class="row">
-      {% for tile in row %}
-      <div class="col-xs-6 col-md-4">
+      {% for tile in tiles %}
+      <div class="col-xs-4 col-md-3">
         <div class="well" style="text-align: center;">
           {{ tile|safe }}
         </div>
       </div>
       {% endfor %}
     </div>
-    {% endfor %}
 {% endblock %}

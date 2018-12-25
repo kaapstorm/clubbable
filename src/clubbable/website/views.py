@@ -22,42 +22,26 @@ class LandingView(LoginView):
         return context
 
 
+def _get_tiles(request):
+    """
+    Return tiles from all dashboard apps
+    """
+    tiles = []
+    for app in settings.INSTALLED_APPS:
+        try:
+            module = __import__(app + '.dashboard')
+            tiles.extend(module.dashboard.get_tiles(request))
+        except (ImportError, AttributeError):
+            # If the app doesn't have dashboard.get_tiles(), just
+            # move along.
+            continue
+    return tiles
+
+
 @login_required
 def dashboard(request):
-
-    def get_tiles():
-        """
-        Return tiles from all dashboard apps
-        """
-        tiles_ = []
-        for app in settings.INSTALLED_APPS:
-            try:
-                module = __import__(app + '.dashboard')
-                tiles_.extend(module.dashboard.get_tiles(request))
-            except (ImportError, AttributeError):
-                # If the app doesn't have dashboard.get_tiles(), just
-                # move along.
-                continue
-        return tiles_
-
-    def get_3_per_row(items):
-        """
-        Arrange items into rows of 3
-        """
-        rows = []
-        row = []
-        for i, item in enumerate(items):
-            row.append(item)
-            if not (i + 1) % 3:
-                rows.append(row)
-                row = []
-        if row:
-            rows.append(row)
-        return rows
-
-    tiles = get_tiles()
     context = {
         'full_name': get_full_name(request.user),
-        'rows': get_3_per_row(tiles),
+        'tiles': _get_tiles(request),
     }
     return render(request, 'website/dashboard.html', context)
