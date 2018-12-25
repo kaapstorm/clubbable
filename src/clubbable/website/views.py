@@ -3,18 +3,33 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
+from django.views.generic.base import ContextMixin
 from markdown import markdown
-from club.utils import get_full_name
+from club.models import get_full_name
 
 
-class LandingView(LoginView):
+def _get_context_data(request):
+    return {
+        'club_name': settings.CLUB_NAME,
+        'user_full_name': get_full_name(request.user)
+    }
+
+
+class ClubbableContextMixin(ContextMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(_get_context_data(self.request))
+        return context
+
+
+class LandingView(LoginView, ClubbableContextMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         with open(settings.BASE_DIR + '/clubbable/landing_page.yaml') as file:
             data = yaml.load(file)
         context.update({
-            'club_name': settings.CLUB_NAME,
             'heading': data['heading'],
             'image': data['image'],
             'content_html': markdown(data['content_markdown']),
@@ -40,8 +55,8 @@ def _get_tiles(request):
 
 @login_required
 def dashboard(request):
-    context = {
-        'full_name': get_full_name(request.user),
+    context = _get_context_data(request)
+    context.update({
         'tiles': _get_tiles(request),
-    }
+    })
     return render(request, 'website/dashboard.html', context)

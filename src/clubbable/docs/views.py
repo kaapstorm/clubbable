@@ -7,9 +7,10 @@ from django.views.generic import ListView
 import magic
 from docs.models import Document, Folder
 from mailer.tasks import send_doc
+from website.views import ClubbableContextMixin
 
 
-class DocList(ListView):
+class DocList(ListView, ClubbableContextMixin):
     context_object_name = 'docs'
 
     def get_queryset(self):
