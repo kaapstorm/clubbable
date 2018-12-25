@@ -8,7 +8,7 @@ from markdown import markdown
 from club.models import get_full_name
 
 
-def _get_context_data(request):
+def get_context_data(request):
     return {
         'club_name': settings.CLUB_NAME,
         'user_full_name': get_full_name(request.user)
@@ -19,7 +19,7 @@ class ClubbableContextMixin(ContextMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(_get_context_data(self.request))
+        context.update(get_context_data(self.request))
         return context
 
 
@@ -55,7 +55,7 @@ def _get_tiles(request):
 
 @login_required
 def dashboard(request):
-    context = _get_context_data(request)
+    context = get_context_data(request)
     context.update({
         'tiles': _get_tiles(request),
     })

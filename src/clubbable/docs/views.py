@@ -7,7 +7,7 @@ from django.views.generic import ListView
 import magic
 from docs.models import Document, Folder
 from mailer.tasks import send_doc
-from website.views import ClubbableContextMixin
+from website.views import ClubbableContextMixin, get_context_data
 
 
 class DocList(ListView, ClubbableContextMixin):
@@ -37,8 +37,9 @@ def send(request, folder_id, pk):
         )
         messages.info(request, 'Your message is queued for sending.')
         return HttpResponseRedirect(reverse('doc_list'))
-    doc = get_object_or_404(Document, pk=pk)
-    return render(request, 'docs/send_doc.html', {'doc': doc})
+    context_data = get_context_data(request)
+    context_data['doc'] = get_object_or_404(Document, pk=pk)
+    return render(request, 'docs/send_doc.html', context_data)
 
 
 def download(request, folder_id, pk, filename):
