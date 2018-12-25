@@ -231,6 +231,8 @@ post_save.connect(Profile.create_profile, sender=User)
 
 
 def get_full_name(user):
+    if not user or not isinstance(user, User):
+        return 'Unknown'
     member = user.profile.member
     if member:
         return '%s' % member
