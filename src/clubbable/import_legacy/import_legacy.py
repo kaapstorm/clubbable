@@ -91,7 +91,7 @@ def import_users():
         try:
             member = Member.objects.get(pk=original.member.id)
             # Set Member.send_emails
-            member.send_emails = original.notify_by_email
+            member.receives_emails = original.notify_by_email
             member.save()
         except OriginalMember.DoesNotExist:
             # Happens when memberID == 0

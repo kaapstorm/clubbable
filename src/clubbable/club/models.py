@@ -42,6 +42,14 @@ class User(AbstractUser):
             full_name = super().get_full_name()
         return full_name or self.get_username()
 
+    def receives_emails(self):
+        try:
+            return self.profile.member.receives_emails
+        except User.profile.RelatedObjectDoesNotExist:
+            # Assume users without corresponding members want to receive
+            # emails
+            return True
+
 
 class GetOrNoneManager(models.Manager):
     """
@@ -90,7 +98,7 @@ class Member(models.Model):
     # WorkTelephone
     # MobileTelephone
     email = models.CharField(max_length=150, blank=True)  # EmailAddress
-    send_emails = models.BooleanField(  # ReceivesNoticesElectronically
+    receives_emails = models.BooleanField(  # ReceivesNoticesElectronically
         default=False,
     )
     # Proposer

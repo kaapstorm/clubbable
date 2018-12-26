@@ -14,10 +14,9 @@ import smtplib
 from inspect import cleandoc
 import magic
 from celery import shared_task
-from django.contrib.auth.models import User
 import requests
 from markdown import markdown
-from club.models import Member
+from club.models import Member, User
 from django.conf import settings
 from django.template import loader
 from django.template.context import Context
@@ -84,15 +83,12 @@ def send_message(template_id, user_id):
 
 def _create_members_list():
 
-    def wants_email(user):
-        return user.profile.member is None or user.profile.member.send_emails
-
     # TODO: First check if it exists, and if so delete it.
     response = requests.post(
         'https://api.mailgun.net/v3/%s/lists/' % settings.MAILGUN_DOMAIN,
         data={'address': 'members@' + settings.CLUB_DOMAIN}
     )
-    members = [u.email for u in User.objects.all() if wants_email(u)]
+    members = [u.email for u in User.objects.all() if u.receives_emails()]
     response = requests.post(
         'https://api.mailgun.net/v3/%s/lists/members@%s/members.json',
         data={'members': members}
@@ -107,7 +103,6 @@ def _delete_members_list():
             settings.CLUB_DOMAIN,
         )
     )
-    return 200 <= response.status_code < 300
 
 
 @contextmanager
