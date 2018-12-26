@@ -16,6 +16,7 @@ import magic
 from celery import shared_task
 from django.contrib.auth.models import User
 import requests
+from markdown import markdown
 from club.models import Member
 from django.conf import settings
 from django.template import loader
@@ -135,11 +136,13 @@ def send_doc(to, subject, message, doc_id):
         )
 
     text = cleandoc(message)
+    html = markdown(text)
     data = {
         'from': settings.FROM_ADDRESS,
         'to': to,
         'subject': subject,
         'text': text,
+        'html': html,
     }
     if settings.REPLY_TO_ADDRESS:
         data['reply-to'] = settings.REPLY_TO_ADDRESS
