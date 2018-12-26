@@ -29,11 +29,10 @@ def send(request, folder_id, pk):
     if request.method == 'POST':
         to = request.POST['to']
         send_doc.delay(
-            to=to,
+            to=request.user.email if to == 'Myself' else to,
             subject=request.POST['subject'],
             text=request.POST['text'],
             doc_id=pk,
-            address=request.user.email if to == 'Myself' else None,
         )
         messages.info(request, 'Your message is queued for sending.')
         return HttpResponseRedirect(
