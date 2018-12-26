@@ -5,8 +5,8 @@ Start the Celery worker with ::
     $ celery -A clubbable worker -l info
 
 """
+import json
 import os
-from contextlib import contextmanager
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -22,6 +22,17 @@ from django.template import loader
 from django.template.context import Context
 from docs.models import Document
 from mailer.models import MessageTemplate
+
+
+API_BASE_URL = 'https://api.mailgun.net/v3/%s' % settings.MAILGUN_DOMAIN
+
+
+class MailerError(Exception):
+    pass
+
+
+class MailgunError(MailerError):
+    pass
 
 
 def _render_string(string, context):
@@ -81,60 +92,30 @@ def send_message(template_id, user_id):
     smtp.quit()
 
 
-def _create_members_list():
-
-    # TODO: First check if it exists, and if so delete it.
-    response = requests.post(
-        'https://api.mailgun.net/v3/%s/lists/' % settings.MAILGUN_DOMAIN,
-        data={'address': 'members@' + settings.CLUB_DOMAIN}
-    )
-    members = [u.email for u in User.objects.all() if u.receives_emails()]
-    response = requests.post(
-        'https://api.mailgun.net/v3/%s/lists/members@%s/members.json',
-        data={'members': members}
-    )
-    return 200 <= response.status_code < 300
-
-
-def _delete_members_list():
-    response = requests.delete(
-        'https://api.mailgun.net/v3/%s/lists/members@%s' % (
-            settings.MAILGUN_DOMAIN,
-            settings.CLUB_DOMAIN,
-        )
-    )
-
-
-@contextmanager
-def get_members_list():
-    _create_members_list()
-    try:
-        yield 'members@' + settings.CLUB_DOMAIN
-    finally:
-        _delete_members_list()
-
-
 @shared_task
 def send_doc(to, subject, message, doc_id):
 
-    def post_mailgun(data_, files_):
-        # Sample response:
-        #     {
-        #       "message": "Queued. Thank you.",
-        #       "id": "<20111114174239.25659.5817@samples.mailgun.org>"
-        #     }
-        return requests.post(
-            'https://api.mailgun.net/v3/%s/messages' % settings.MAILGUN_DOMAIN,
-            auth=('api', settings.MAILGUN_API_KEY),
-            data=data_,
-            files=files_,
-        )
+    def get_recipients_vars(to_):
+        if isinstance(to_, User):
+            return to_.email, {to_.email: {'full_name': to_.get_full_name()}}
+        elif to_ == 'Everyone':
+            recipients = []
+            variables = {}
+            for user in User.objects.all():
+                if user.receives_emails():
+                    recipients.append(user.email)
+                    variables[user.email] = {'full_name': user.get_full_name()}
+            return recipients, variables
+        else:
+            raise MailerError('Unknown recipient "%s"' % to_)
 
     text = cleandoc(message)
     html = markdown(text)
+    recipients, variables = get_recipients_vars(to)
     data = {
         'from': settings.FROM_ADDRESS,
-        'to': to,
+        'to': recipients,
+        'recipient-variables': json.dumps(variables),
         'subject': subject,
         'text': text,
         'html': html,
@@ -149,10 +130,10 @@ def send_doc(to, subject, message, doc_id):
     mime_type = magic.from_buffer(doc.file.read(1024), mime=True)
     files = {'attachment': (filename, doc.file.open('rb'), mime_type)}
 
-    if to == 'Everyone':
-        with get_members_list() as address:
-            data['to'] = address
-            response = post_mailgun(data, files)
-    else:
-        response = post_mailgun(data, files)
+    response = requests.post(
+        '%s/messages' % API_BASE_URL,
+        auth=('api', settings.MAILGUN_API_KEY),
+        data=data,
+        files=files,
+    )
     return response
