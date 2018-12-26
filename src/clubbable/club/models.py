@@ -35,6 +35,13 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # USERNAME_FIELD will always be prompted for
 
+    def get_full_name(self):
+        try:
+            full_name = self.profile.member.get_full_name()
+        except User.profile.RelatedObjectDoesNotExist:
+            full_name = super().get_full_name()
+        return full_name or self.get_username()
+
 
 class GetOrNoneManager(models.Manager):
     """
@@ -247,17 +254,3 @@ class Profile(models.Model):
 
 
 post_save.connect(Profile.create_profile, sender=User)
-
-
-def get_full_name(user):
-    if not user or not isinstance(user, User):
-        return 'Unknown'
-    member = user.profile.member
-    if member:
-        return '%s' % member
-    full_name = user.get_full_name()
-    if full_name:
-        return full_name
-    if user.email:
-        return user.email
-    return user.username

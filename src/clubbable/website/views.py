@@ -5,13 +5,12 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 from django.views.generic.base import ContextMixin
 from markdown import markdown
-from club.models import get_full_name
 
 
 def get_context_data(request):
     return {
         'club_name': settings.CLUB_NAME,
-        'user_full_name': get_full_name(request.user)
+        'user_full_name': request.user.get_full_name()
     }
 
 
