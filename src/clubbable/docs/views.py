@@ -36,7 +36,9 @@ def send(request, folder_id, pk):
             address=request.user.email if to == 'Myself' else None,
         )
         messages.info(request, 'Your message is queued for sending.')
-        return HttpResponseRedirect(reverse('doc_list'))
+        return HttpResponseRedirect(
+            reverse('doc_list', kwargs={'folder_id': folder_id})
+        )
     context_data = get_context_data(request)
     context_data['doc'] = get_object_or_404(Document, pk=pk)
     return render(request, 'docs/send_doc.html', context_data)
