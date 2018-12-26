@@ -125,18 +125,21 @@ class Member(models.Model):
         necessary, sync and notify admin.
         """
         member = instance
-        if not member.profile_set().count():
+        try:
+            user = member.profile.user
+        except Member.profile.RelatedObjectDoesNotExist:
             # This member does not have an associated user
             return
-        user = member.profile_set().get().user
         if user.email == member.email:
             # The e-mail address did not change
             return
-        message = 'The e-mail address of {} has changed from {} to {}.'.format(
-            member, user.email, member.email)
         user.email = member.email
         user.save()
-        mail_admins('User address changed', message)
+        mail_admins(
+            'User address changed',
+            'The e-mail address of {} has changed from {} to {}.'.format(
+                member, user.email, member.email)
+        )
 
 
 post_save.connect(Member.sync_email, sender=Member)
@@ -211,20 +214,17 @@ class Profile(models.Model):
     # Members can only be associated with one user. To allow the mailer to
     # send to other organisations and non-members, Users do not need to be
     # Members.
-    member = models.OneToOneField(
-        Member, models.SET_NULL, null=True, blank=True
-    )
+    member = models.OneToOneField(Member, models.CASCADE)
 
     def __str__(self):
-        if self.member:
-            return '%s (%s)' % (self.user, self.member)
-        return '%s' % self.user
+        return '%s (%s)' % (self.user, self.member)
 
     @staticmethod
     def create_profile(sender, instance, created, **kwargs):
         if created:
             member = Member.objects.get_or_none(email=instance.email)
-            Profile.objects.create(user=instance, member=member)
+            if member:
+                Profile.objects.create(user=instance, member=member)
 
 
 post_save.connect(Profile.create_profile, sender=User)
