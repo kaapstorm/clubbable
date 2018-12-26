@@ -11,10 +11,29 @@ clubs, or simply ignored if the club does not use a Microsoft Access database.
 
 """
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.mail import mail_admins
 from django.db import models
 from django.db.models.signals import post_save
+from django.utils.translation import gettext_lazy as _
+
+
+class User(AbstractUser):
+    """
+    Custom User model where the username is the email address
+    """
+
+    username = None
+    email = models.EmailField(
+        _('email address'),
+        unique=True,
+        error_messages={
+            'unique': _("A user with that email address already exists."),
+        },
+    )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # USERNAME_FIELD will always be prompted for
 
 
 class GetOrNoneManager(models.Manager):

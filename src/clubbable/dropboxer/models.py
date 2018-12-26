@@ -1,6 +1,5 @@
-from django.contrib.auth.models import User
 from django.db import models
-from club.models import GetOrNoneManager
+from club.models import GetOrNoneManager, User
 
 
 class DropboxUser(models.Model):

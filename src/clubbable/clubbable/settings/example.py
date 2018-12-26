@@ -83,6 +83,8 @@ INSTALLED_APPS = [
 if IMPORT_LEGACY:
     INSTALLED_APPS.append('import_legacy')
 
+AUTH_USER_MODEL = 'club.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
