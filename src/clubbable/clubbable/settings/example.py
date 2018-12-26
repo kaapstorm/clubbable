@@ -10,6 +10,9 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.contrib.messages.constants import DEFAULT_TAGS, ERROR
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # ==============================
@@ -142,6 +145,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Change the tag for error messages to "warning" so that it works nicely
+# with Bootstrap classes
+DEFAULT_TAGS[ERROR] = 'warning'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 MEDIA_ROOT = '/var/www/example.com/media/'
