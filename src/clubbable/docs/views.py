@@ -31,7 +31,7 @@ def send(request, folder_id, pk):
         send_doc.delay(
             to=request.user.email if to == 'Myself' else to,
             subject=request.POST['subject'],
-            text=request.POST['text'],
+            message=request.POST['text'],
             doc_id=pk,
         )
         messages.info(request, 'Your message is queued for sending.')

@@ -5,11 +5,14 @@ Start the Celery worker with ::
     $ celery -A clubbable worker -l info
 
 """
+import os
 from contextlib import contextmanager
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+from inspect import cleandoc
+import magic
 from celery import shared_task
 from django.contrib.auth.models import User
 import requests
@@ -116,9 +119,9 @@ def get_members_list():
 
 
 @shared_task
-def send_doc(to, subject, text, doc_id):
+def send_doc(to, subject, message, doc_id):
 
-    def post_mailgun(data_, doc_):
+    def post_mailgun(data_, files_):
         # Sample response:
         #     {
         #       "message": "Queued. Thank you.",
@@ -127,10 +130,11 @@ def send_doc(to, subject, text, doc_id):
         return requests.post(
             'https://api.mailgun.net/v3/%s/messages' % settings.MAILGUN_DOMAIN,
             auth=('api', settings.MAILGUN_API_KEY),
-            files=[('attachment', doc_.data)],
-            data=data_
+            data=data_,
+            files=files_,
         )
 
+    text = cleandoc(message)
     data = {
         'from': settings.FROM_ADDRESS,
         'to': to,
@@ -141,11 +145,16 @@ def send_doc(to, subject, text, doc_id):
         data['reply-to'] = settings.REPLY_TO_ADDRESS
     if settings.BOUNCE_ADDRESS:
         data['return-path'] = settings.BOUNCE_ADDRESS
+
     doc = Document.objects.get(pk=doc_id)
+    filename = doc.file.name.split(os.sep)[-1]
+    mime_type = magic.from_buffer(doc.file.read(1024), mime=True)
+    files = {'attachment': (filename, doc.file.open('rb'), mime_type)}
+
     if to == 'Everyone':
         with get_members_list() as address:
             data['to'] = address
-            response = post_mailgun(data, doc)
+            response = post_mailgun(data, files)
     else:
-        response = post_mailgun(data, doc)
-    return 200 <= response.status_code < 300
+        response = post_mailgun(data, files)
+    return response
