@@ -14,9 +14,14 @@
     </button>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div class="navbar-left">
+        <a href="{% url 'dashboard' %}" style="text-decoration: none;">
+          &#x1f989;<!-- Unicode owl -->
+        </a>
+      </div>
       <div class="navbar-right">
         Welcome, <a href="#">{{ user_full_name }}</a>.
-        <a class="btn btn-default" href="/admin/logout/">Log out</a>
+        | <a href="/admin/logout/">Log out</a>
       </div>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
