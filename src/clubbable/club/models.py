@@ -136,13 +136,14 @@ class Member(models.Model):
         return self.get_full_name()
 
     def get_full_name(self):
+        familiar_name = self.familiar_name or self.initials
         if settings.MEMBER_TITLE:
             return ' '.join((
                 settings.MEMBER_TITLE,
-                self.familiar_name,
+                familiar_name,
                 self.last_name
             ))
-        return ' '.join((self.familiar_name, self.last_name))
+        return ' '.join((familiar_name, self.last_name))
 
     def get_formal_name(self):
         return ' '.join((
