@@ -132,6 +132,9 @@ if IMPORT_LEGACY:
         'PASSWORD': 'club_secret',
         'HOST': '',
         'PORT': '',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
