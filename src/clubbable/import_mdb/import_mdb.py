@@ -11,7 +11,7 @@ from club.models import Member, Meeting, Guest
 
 
 MDB_EXPORT_CMD = '/usr/bin/mdb-export'
-MDB_DATE_RE = re.compile(r'^(\d{2})/(\d{2})/(\d{2}) 00:00:00')
+MDB_DATE_RE = re.compile(r'^(\d{2})/(\d{2})/(\d{2}) 00:00:00$')
 ATTRIBUTES = {
     'Member': (
         # model attribute, table column, is nullable, transform
@@ -56,11 +56,11 @@ ATTRIBUTES = {
 
 def transform_date(mdb_date):
     """
-    Transforms an MM-DD-YY-formatted date to an ISO-formatted date
+    Transforms an MM/DD/YY-formatted date to an ISO-formatted date
 
-    >>> transform_date('12-31-01')
+    >>> transform_date('12/31/01 00:00:00')
     '2001-12-31'
-    >>> transform_date('12-31-99')
+    >>> transform_date('12/31/99 00:00:00')
     '1999-12-31'
 
     """
