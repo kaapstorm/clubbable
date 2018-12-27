@@ -7,7 +7,6 @@ import csv
 from datetime import datetime
 import re
 from subprocess import check_output
-from celery import shared_task
 from club.models import Member, Meeting, Guest
 
 
@@ -133,7 +132,6 @@ class MdbImporter(object):
         self._import_table(Meeting, 'Events', 'EventNum', attributes)
 
 
-@shared_task
 def import_mdb(filename):
     importer = MdbImporter(filename)
     importer.import_members()
