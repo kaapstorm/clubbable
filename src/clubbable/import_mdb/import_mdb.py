@@ -9,7 +9,9 @@ import re
 from subprocess import Popen, PIPE
 from celery import shared_task
 from club.models import Member, Meeting, Guest
-from import_mdb.const import MDB_EXPORT_CMD
+
+
+MDB_EXPORT_CMD = '/usr/bin/mdb-export'
 
 
 def transform_date(mdb_date):
