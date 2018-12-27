@@ -1,4 +1,4 @@
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from tempfile import NamedTemporaryFile
 from celery import shared_task
 from django.conf import settings
@@ -27,16 +27,6 @@ def is_mdb_file(entry):
         isinstance(entry, FileMetadata) and
         entry.name == settings.MDB_FILENAME
     )
-
-
-@contextmanager
-def get_tmp_file_name(data):
-    tmp_file = NamedTemporaryFile()
-    tmp_file.write(data)
-    try:
-        yield tmp_file.name
-    finally:
-        tmp_file.close()
 
 
 @quickcache([])
@@ -85,12 +75,13 @@ def import_document(dbx, entry):
     folder_name = get_folder(entry.path_lower)
     folder = get_folders()[folder_name]
     _, response = dbx.files_download(entry.path_lower)
-    with get_tmp_file_name(response.content) as filename:
+    with closing(NamedTemporaryFile()) as tmp_file:
+        tmp_file.write(response.content)
         Document.objects.create(
             folder=folder,
             description=entry.name,
             dropbox_file_id=entry.id,
-            file=filename,
+            file=tmp_file.name,
         )
 
 
@@ -121,8 +112,9 @@ def process_changes(username):
             for entry in result.entries:
                 if is_mdb_file(entry):
                     _, response = dbx.files_download(entry.path_lower)
-                    with get_tmp_file_name(response.content) as filename:
-                        import_mdb(filename)
+                    with closing(NamedTemporaryFile()) as tmp_file:
+                        tmp_file.write(response.content)
+                        import_mdb(tmp_file.name)
                 elif is_new_document(entry):
                     import_document(dbx, entry)
 
