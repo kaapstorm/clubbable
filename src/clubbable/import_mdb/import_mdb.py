@@ -6,7 +6,7 @@ Check table names, and columns to customise for your database.
 import csv
 from datetime import datetime
 import re
-from subprocess import Popen, PIPE
+from subprocess import check_output
 from celery import shared_task
 from club.models import Member, Meeting, Guest
 
@@ -59,9 +59,8 @@ class MdbImporter(object):
         """
         start = datetime.now()
 
-        args = (MDB_EXPORT_CMD, self.mdb_file, table)
-        p = Popen(args, stdout=PIPE)
-        reader = csv.DictReader(p.stdout)
+        output = check_output((MDB_EXPORT_CMD, self.mdb_file, table))
+        reader = csv.DictReader(output)
 
         lines = 0
         for row in reader:
