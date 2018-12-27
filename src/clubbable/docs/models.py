@@ -1,4 +1,5 @@
 import datetime
+import os
 import posixpath
 from django.db import models
 
@@ -19,6 +20,7 @@ class Folder(models.Model):
 class Document(models.Model):
     folder = models.ForeignKey(Folder, models.PROTECT)
     description = models.CharField(max_length=255, blank=True)
+    dropbox_file_id = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to=_get_upload_path)
 
     def __str__(self):
@@ -26,7 +28,7 @@ class Document(models.Model):
 
     @property
     def filename(self):
-        return self.file.name.split('/')[-1]
+        return self.file.name.split(os.sep)[-1]
 
     @property
     def doc_type(self):
