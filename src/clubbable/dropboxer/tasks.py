@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile
 from celery import shared_task
 from django.conf import settings
 from dropbox import Dropbox
-from dropbox.files import DeletedMetadata, FileMetadata, FolderMetadata
+from dropbox.files import FileMetadata
 from clubbable.utils import quickcache
 from docs.models import Folder, Document
 from import_mdb.import_mdb import import_mdb
@@ -39,57 +39,58 @@ def get_tmp_file_name(data):
 
 
 @quickcache([])
-def get_folder_names():
-    return set(f.name for f in Folder.objects.all())
-
-
-def is_doc_folder(entry):
-    return (
-        isinstance(entry, FolderMetadata) and
-        entry.name in get_folder_names()
-    )
+def get_folders():
+    """
+    Returns a dictionary of lower-case folder names to folder instances
+    """
+    return {f.name.lower(): f for f in Folder.objects.all()}
 
 
 @quickcache(['folder_name'])
-def get_folder_doc_filenames(folder_name):
-    folder = Folder.objects.get(name=folder_name)
-    return set(d.filename for d in folder.document_set.all())
+def get_doc_file_ids(folder_name):
+    """
+    Returns a set of the Dropbox file IDs of the documents in a given
+    folder
+    """
+    folder = get_folders()[folder_name]
+    return {d.dropbox_file_id for d in folder.document_set.all()}
 
 
-def add_doc_to_folder(dbx, doc_entry, folder_name):
-    folder = Folder.objects.get(name=folder_name)
-    _, response = dbx.files_download(doc_entry.path_lower)
-    with get_tmp_file_name(response.content) as doc_filename:
+def get_folder(path):
+    """
+    Returns the folder of a file specified by a path
+
+    >>> get_folder('/foo/bar/baz.txt')
+    'bar'
+
+    """
+    try:
+        return path.split('/')[-2]
+    except IndexError:
+        return None
+
+
+def is_new_document(entry):
+    folder_name = get_folder(entry.path_lower)
+    return (
+            isinstance(entry, FileMetadata) and
+            folder_name and
+            folder_name in get_folders() and
+            entry.id not in get_doc_file_ids(folder_name)
+    )
+
+
+def import_document(dbx, entry):
+    folder_name = get_folder(entry.path_lower)
+    folder = get_folders()[folder_name]
+    _, response = dbx.files_download(entry.path_lower)
+    with get_tmp_file_name(response.content) as filename:
         Document.objects.create(
             folder=folder,
-            description=doc_entry.name,
-            file=doc_filename,
+            description=entry.name,
+            dropbox_file_id=entry.id,
+            file=filename,
         )
-
-
-def process_doc_folder(dbx, folder_entry):
-    cursor = None
-    has_more = True
-
-    while has_more:
-        if cursor is None:
-            result = dbx.files_list_folder(path=folder_entry.path_lower)
-        else:
-            result = dbx.files_list_folder_continue(cursor)
-
-        for entry in result.entries:
-            if (
-                    isinstance(entry, DeletedMetadata) or
-                    isinstance(entry, FolderMetadata)
-            ):
-                continue
-
-            if entry.name not in get_folder_doc_filenames(folder_entry.name):
-                add_doc_to_folder(dbx, entry, folder_entry.name)
-                get_folder_doc_filenames.clear(folder_entry.name)
-
-        cursor = result.cursor
-        has_more = result.has_more
 
 
 @shared_task
@@ -102,27 +103,26 @@ def process_changes(dropbox_user):
         return
 
     with lock_dropbox_user(dropbox_user):
-        cursor = None
         dbx = Dropbox(dropbox_user.access_token)
+        cursor = dropbox_user.cursor
         has_more = True
 
         while has_more:
-            if cursor is None:
-                result = dbx.files_list_folder(path='')
+            if not cursor:
+                result = dbx.files_list_folder(path='', recursive=True)
             else:
                 result = dbx.files_list_folder_continue(cursor)
 
             for entry in result.entries:
-                if isinstance(entry, DeletedMetadata):
-                    # Ignore deleted files
-                    continue
-
                 if is_mdb_file(entry):
                     _, response = dbx.files_download(entry.path_lower)
-                    with get_tmp_file_name(response.content) as mdb_filename:
-                        import_mdb(mdb_filename)
-                elif is_doc_folder(entry):
-                    process_doc_folder(dbx, entry)
+                    with get_tmp_file_name(response.content) as filename:
+                        import_mdb(filename)
+                elif is_new_document(entry):
+                    import_document(dbx, entry)
 
             cursor = result.cursor
             has_more = result.has_more
+
+        dropbox_user.cursor = cursor
+        dropbox_user.save()

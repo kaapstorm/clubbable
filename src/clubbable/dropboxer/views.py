@@ -99,26 +99,9 @@ def webhook(request):
         if not verify_signature(request):
             return HttpResponseForbidden()
 
-        # Sample value of request.body:
-        #
-        #     {
-        #         "list_folder": {
-        #             "accounts": [
-        #                 "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc",
-        #                 ...
-        #             ]
-        #         },
-        #         "delta": {
-        #             "users": [
-        #                 12345678,
-        #                 23456789,
-        #                 ...
-        #             ]
-        #         }
-        #     }
         notification = json.loads(request.body)
         for account in notification['list_folder']['accounts']:
             dropbox_user = DropboxUser.objects.get_or_none(account=account)
             if dropbox_user:
-                process_changes(dropbox_user).delay()
+                process_changes.delay(dropbox_user)
         return HttpResponse('Accepted', content_type='text/plain', status=202)
