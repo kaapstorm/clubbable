@@ -12,6 +12,46 @@ from club.models import Member, Meeting, Guest
 
 MDB_EXPORT_CMD = '/usr/bin/mdb-export'
 MDB_DATE_RE = re.compile(r'^(\d{2})/(\d{2})/(\d{2}) 00:00:00')
+ATTRIBUTES = {
+    'Member': (
+        # model attribute, table column, is nullable, transform
+        ('title', 'Title', False, None),
+        ('initials', 'Initials', False, None),
+        ('last_name', 'Lastname', False, None),
+        ('post_title', 'PostTitle', False, None),
+        ('familiar_name', 'FamiliarName', False, None),
+        ('year', 'Year', True, None),
+        ('email', 'EmailAddress', False, None),
+        ('receives_emails', 'ReceivesNoticesElectronically', False, None),
+        ('qualification_art', 'Art', False, None),
+        ('qualification_drama', 'Drama', False, None),
+        ('qualification_literature', 'Literature', False, None),
+        ('qualification_music', 'Music', False, None),
+        ('qualification_science', 'Science', False, None),
+        ('hon_life_member', 'HonLifeMember', False, None),
+        ('canonisation_date', 'CanonisationDate', True, 'transform_date'),
+    ),
+    'Guest': (
+        ('date_of_listing', 'DateOfListing', True, 'transform_date'),
+        ('last_name', 'GuestLastName', False, None),
+        ('first_name', 'GuestFirstName', False, None),
+        ('initials', 'GuestInitials', False, None),
+        ('title', 'GuestTitle', False, None),
+        ('admitted_to_club', 'AdmittedToOwldom', False, None),
+        ('date_admitted', 'DateAdmitted', True, 'transform_date'),
+        ('member_id', 'MemberNum', True, None),
+        ('delisted', 'Delisted', False, None),
+    ),
+    'Meeting': (
+        ('year', 'Year', False, None),
+        ('month', 'Month', False, None),
+        ('date', 'EventDate', False, 'transform_date'),
+        ('name', 'Name', False, None),
+        ('status', 'Status', False, None),
+        ('number_of_tables', 'NumberOfTables', False, None),
+        ('comment', 'Comment', False, None),
+    ),
+}
 
 
 def transform_date(mdb_date):
@@ -42,7 +82,7 @@ def transform_date(mdb_date):
     return MDB_DATE_RE.sub(to_iso_date, mdb_date)
 
 
-def import_table(filename, class_, table, id_, attributes, delete=True):
+def import_table(filename, class_, table, id_, delete=True):
     """
     Imports a table from an Access database.
 
@@ -52,6 +92,7 @@ def import_table(filename, class_, table, id_, attributes, delete=True):
     :param attributes: A tuple of attribute-column tuples
     :param delete: Delete records not found in Access
     """
+    attributes = ATTRIBUTES[class_.__name__]
     start = datetime.now()
 
     output = check_output((MDB_EXPORT_CMD, filename, table))
@@ -69,7 +110,8 @@ def import_table(filename, class_, table, id_, attributes, delete=True):
             if nullable and len(row[column]) == 0:
                 value = None
             elif transform is not None:
-                value = transform(row[column])
+                func = globals()[transform]
+                value = func(row[column])
             else:
                 value = row[column]
             setattr(obj, attr, value)
@@ -83,53 +125,15 @@ def import_table(filename, class_, table, id_, attributes, delete=True):
 
 
 def import_members(filename):
-    attributes = (
-        # model attribute, table column, is nullable, transform
-        ('title', 'Title', False, None),
-        ('initials', 'Initials', False, None),
-        ('last_name', 'Lastname', False, None),
-        ('post_title', 'PostTitle', False, None),
-        ('familiar_name', 'FamiliarName', False, None),
-        ('year', 'Year', True, None),
-        ('email', 'EmailAddress', False, None),
-        ('receives_emails', 'ReceivesNoticesElectronically', False, None),
-        ('qualification_art', 'Art', False, None),
-        ('qualification_drama', 'Drama', False, None),
-        ('qualification_literature', 'Literature', False, None),
-        ('qualification_music', 'Music', False, None),
-        ('qualification_science', 'Science', False, None),
-        ('hon_life_member', 'HonLifeMember', False, None),
-        ('canonisation_date', 'CanonisationDate', True, transform_date),
-    )
-    import_table(filename, Member, 'OwlsPersonalDetails', 'OwlID', attributes)
+    import_table(filename, Member, 'OwlsPersonalDetails', 'OwlID')
 
 
 def import_guests(filename):
-    attributes = (
-        ('date_of_listing', 'DateOfListing', True, transform_date),
-        ('last_name', 'GuestLastName', False, None),
-        ('first_name', 'GuestFirstName', False, None),
-        ('initials', 'GuestInitials', False, None),
-        ('title', 'GuestTitle', False, None),
-        ('admitted_to_club', 'AdmittedToOwldom', False, None),
-        ('date_admitted', 'DateAdmitted', True, transform_date),
-        ('member_id', 'MemberNum', True, None),
-        ('delisted', 'Delisted', False, None),
-    )
-    import_table(filename, Guest, 'Guests', 'GuestID', attributes)
+    import_table(filename, Guest, 'Guests', 'GuestID')
 
 
 def import_meetings(filename):
-    attributes = (
-        ('year', 'Year', False, None),
-        ('month', 'Month', False, None),
-        ('date', 'EventDate', False, transform_date),
-        ('name', 'Name', False, None),
-        ('status', 'Status', False, None),
-        ('number_of_tables', 'NumberOfTables', False, None),
-        ('comment', 'Comment', False, None),
-    )
-    import_table(filename, Meeting, 'Events', 'EventNum', attributes)
+    import_table(filename, Meeting, 'Events', 'EventNum')
 
 
 def import_mdb(filename):
