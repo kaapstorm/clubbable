@@ -141,6 +141,16 @@ if IMPORT_LEGACY:
     }
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
+CACHES = {
+    'locmem': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/django_cache',
+    }
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
