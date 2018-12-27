@@ -44,7 +44,7 @@ def import_members():
             last_name=original.surname,
             post_title='',
             familiar_name=original.common_name,
-            year=original.election_year,
+            year=original.election_year or None,
             email=original.email,
             receives_emails=False,
             qualification_art=('Art' in original.interests),
@@ -59,6 +59,9 @@ def import_members():
 
 def import_users():
     for original in OriginalUser.objects.all():
+        # Check whether User has already exists
+        if User.objects.filter(email=original.email).count():
+            continue
         # Split fullname into first_name and last_name
         try:
             first_name, last_name = original.fullname.split(' ', 1)
@@ -82,23 +85,12 @@ def import_users():
             last_login=last_login,
             date_joined=last_login,
         )
-        # Create profile if Member is not yet associated with a user
-        profile = Profile.objects.create(user=user)
         try:
-            member = Member.objects.get(pk=original.member.id)
-            # Set Member.send_emails
-            member.receives_emails = original.notify_by_email
-            member.save()
-        except OriginalMember.DoesNotExist:
-            # Happens when memberID == 0
+            # Saving user will create a profile if email addresses match
+            user.profile.member.receives_emails = original.notify_by_email
+            user.profile.member.save()
+        except User.profile.RelatedObjectDoesNotExist:
             pass
-        else:
-            try:
-                profile.member = member
-                profile.save()
-            except IntegrityError:
-                # Old database allowed a Member to have multiple users
-                pass
 
 
 def import_cartoons(files_path):
