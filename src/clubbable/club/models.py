@@ -257,8 +257,15 @@ class Profile(models.Model):
     @staticmethod
     def create_profile(sender, instance, created, **kwargs):
         if created:
-            member = Member.objects.get_or_none(email=instance.email)
-            if member:
+            try:
+                member = Member.objects.get(email=instance.email)
+            except (
+                Member.DoesNotExist,
+                # There is no unique constraint on Member email addresses
+                Member.MultipleObjectsReturned,
+            ):
+                pass
+            else:
                 Profile.objects.create(user=instance, member=member)
 
 
