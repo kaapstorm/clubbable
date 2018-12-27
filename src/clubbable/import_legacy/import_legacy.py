@@ -6,12 +6,11 @@ been imported using import_mdb.
 from datetime import date
 import os
 import re
-from django.contrib.auth.models import User as DjangoUser
 from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db import IntegrityError
 import magic
-from club.models import Member, Meeting, Profile
+from club.models import Member, Meeting, Profile, User
 from docs.models import Document, Folder
 from galleries.models import Gallery, Image
 from import_legacy.models import (
@@ -47,7 +46,7 @@ def import_members():
             familiar_name=original.common_name,
             year=original.election_year,
             email=original.email,
-            send_emails=False,
+            receives_emails=False,
             qualification_art=('Art' in original.interests),
             qualification_drama=('Drama' in original.interests),
             qualification_literature=('Literature' in original.interests),
@@ -74,11 +73,10 @@ def import_users():
         else:
             last_login = original.last_login
         # Create user
-        django_user = DjangoUser.objects.create(
-            username=original.username,
+        user = User.objects.create(
+            email=original.email,
             first_name=first_name,
             last_name=last_name,
-            email=original.email,
             password='md5$$%s' % (original.password,),
             is_staff=False,
             is_active=original.is_login_enabled,
@@ -87,7 +85,7 @@ def import_users():
             date_joined=last_login,
         )
         # Create profile if Member is not yet associated with a user
-        profile = Profile.objects.create(user=django_user)
+        profile = Profile.objects.create(user=user)
         try:
             member = Member.objects.get(pk=original.member.id)
             # Set Member.send_emails
