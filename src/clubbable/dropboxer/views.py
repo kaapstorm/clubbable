@@ -2,6 +2,8 @@ import hashlib
 import hmac
 import json
 import logging
+from functools import wraps
+
 from django.conf import settings
 from django.contrib import messages
 from django.http import (
@@ -11,44 +13,75 @@ from django.http import (
     HttpResponse,
 )
 from django.urls import reverse
-import dropbox.oauth
-from dropboxer.decorators import dropbox_required
+from dropbox import DropboxOAuth2Flow
+from dropbox.oauth import (
+    BadRequestException,
+    BadStateException,
+    CsrfException,
+    NotApprovedException,
+    ProviderException,
+)
+
 from dropboxer.models import DropboxUser
 from dropboxer.tasks import process_changes
-from dropboxer.utils import get_auth_flow
 
 
 logger = logging.getLogger(__name__)
 
 
-def connect(request):
-    flow = get_auth_flow(request)
-    auth_url = flow.start()
-    return HttpResponseRedirect(auth_url)
+def _get_dropbox_auth_flow(request):
+    redirect_uri = request.build_absolute_uri(reverse('dropbox_auth_finish'))
+    return DropboxOAuth2Flow(
+        settings.DROPBOX_APP_KEY,
+        settings.DROPBOX_APP_SECRET,
+        redirect_uri,
+        request.session,
+        'dropbox-auth-csrf-token'
+    )
 
 
-def auth(request):
+def dropbox_required(view_func):
+
+    @wraps(view_func)
+    def wrapped(request, *args, **kwargs):
+        dropbox_user = DropboxUser.objects.get_or_none(user=request.user)
+        if dropbox_user and dropbox_user.access_token:
+            return view_func(request, *args, **kwargs)
+        if not dropbox_user or not dropbox_user.access_token:
+            authorize_url = _get_dropbox_auth_flow(request).start()
+            return HttpResponseRedirect(authorize_url)
+
+    return wrapped
+
+
+def dropbox_auth_start(request):
+    authorize_url = _get_dropbox_auth_flow(request).start()
+    return HttpResponseRedirect(authorize_url)
+
+
+def dropbox_auth_finish(request):
     try:
-        flow = get_auth_flow(request)
-        access_token, user_id, url_state = flow.finish(request.GET)
-    except dropbox.oauth.BadRequestException:
+        oauth_result = (
+            _get_dropbox_auth_flow(request).finish(request.GET)
+        )
+    except BadRequestException:
         return HttpResponseBadRequest()
-    except dropbox.oauth.BadStateException:
+    except BadStateException:
         # Start the auth flow again.
-        return connect(request)
-    except dropbox.oauth.CsrfException:
+        return HttpResponseRedirect(reverse('dropbox_auth_start'))
+    except CsrfException:
         return HttpResponseForbidden()
-    except dropbox.oauth.NotApprovedException:
+    except NotApprovedException:
         messages.warning(request, 'Dropbox authentication was not approved.')
         return HttpResponseRedirect(reverse('dashboard'))
-    except dropbox.oauth.ProviderException as err:
+    except ProviderException as err:
         logger.exception('Error authenticating Dropbox', err)
         return HttpResponseForbidden()
     DropboxUser.objects.update_or_create(
         user=request.user,
         defaults={
-            'account': user_id,
-            'access_token': access_token
+            'account': oauth_result.account_id,
+            'access_token': oauth_result.access_token
         }
     )
     messages.success(request, 'Dropbox authentication successful.')
