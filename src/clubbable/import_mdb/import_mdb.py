@@ -21,7 +21,7 @@ ATTRIBUTES = {
         ('post_title', 'PostTitle', False, None),
         ('familiar_name', 'FamiliarName', False, None),
         ('year', 'Year', True, None),
-        ('email', 'EmailAddress', False, None),
+        ('email', 'EmailAddress', False, 'none_to_blank'),
         ('receives_emails', 'ReceivesNoticesElectronically', False, None),
         ('qualification_art', 'Art', False, None),
         ('qualification_drama', 'Drama', False, None),
@@ -80,6 +80,19 @@ def transform_date(mdb_date):
         return '%s-%s-%s' % (yyyy, mm, dd)
 
     return MDB_DATE_RE.sub(to_iso_date, mdb_date)
+
+
+def none_to_blank(value):
+    """
+    Convert "(none)" to empty string
+
+    >>> none_to_blank('(none)')
+    ''
+    >>> none_to_blank('spam')
+    'spam'
+
+    """
+    return '' if value == '(none)' else value
 
 
 def import_table(filename, class_, table, id_, delete=True):
