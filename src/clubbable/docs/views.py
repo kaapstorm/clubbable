@@ -29,7 +29,7 @@ def send(request, folder_id, pk):
     if request.method == 'POST':
         to = request.POST['to']
         send_doc.delay(
-            to=request.user if to == 'Myself' else to,
+            to=request.user.email if to == 'Myself' else to,
             subject=request.POST['subject'],
             message=request.POST['text'],
             doc_id=pk,

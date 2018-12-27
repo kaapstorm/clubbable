@@ -28,9 +28,7 @@ class MailerError(Exception):
 def send_doc(to, subject, message, doc_id):
 
     def get_recipients_vars(to_):
-        if isinstance(to_, User):
-            return to_.email, {to_.email: {'full_name': to_.get_full_name()}}
-        elif to_ == 'Everyone':
+        if to_ == 'Everyone':
             recipients = []
             variables = {}
             for user in User.objects.all():
@@ -39,7 +37,8 @@ def send_doc(to, subject, message, doc_id):
                     variables[user.email] = {'full_name': user.get_full_name()}
             return recipients, variables
         else:
-            raise MailerError('Unknown recipient "%s"' % to_)
+            user = User.objects.get(email=to_)
+            return to_, {to_: {'full_name': user.get_full_name()}}
 
     text = cleandoc(message)
     html = markdown(text)

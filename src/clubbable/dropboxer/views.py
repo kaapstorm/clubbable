@@ -101,8 +101,7 @@ def check_dropbox(request):
     """
     Schedule Dropbox to be checked, and return to dashboard.
     """
-    dropbox_user = DropboxUser.objects.get(user=request.user)
-    process_changes.delay(dropbox_user)
+    process_changes.delay(request.user.get_username())
     messages.info(request, 'Checking Dropbox for changes.')
     return HttpResponseRedirect(reverse('dashboard'))
 
@@ -136,5 +135,5 @@ def webhook(request):
         for account in notification['list_folder']['accounts']:
             dropbox_user = DropboxUser.objects.get_or_none(account=account)
             if dropbox_user:
-                process_changes.delay(dropbox_user)
+                process_changes.delay(dropbox_user.user.get_username())
         return HttpResponse('Accepted', content_type='text/plain', status=202)

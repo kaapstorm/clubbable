@@ -4,6 +4,7 @@ from celery import shared_task
 from django.conf import settings
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
+from club.models import User
 from clubbable.utils import quickcache
 from docs.models import Folder, Document
 from import_mdb.import_mdb import import_mdb
@@ -94,11 +95,15 @@ def import_document(dbx, entry):
 
 
 @shared_task
-def process_changes(dropbox_user):
+def process_changes(username):
     """
-    Call /files/list_folder for the given DropboxUser and process any
-    changes.
+    Call /files/list_folder for the given user and process any changes.
     """
+    try:
+        dropbox_user = User.objects.get(email=username).dropbox_user
+    except User.dropbox_user.RelatedObjectDoesNotExist:
+        return
+
     if dropbox_user.is_locked:
         return
 
