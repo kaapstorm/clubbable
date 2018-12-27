@@ -8,9 +8,14 @@ from markdown import markdown
 
 
 def get_context_data(request):
+    try:
+        user_full_name = request.user.get_full_name()
+    except AttributeError:
+        # Even AnonymousUser has get_username()
+        user_full_name = request.user.get_username()
     return {
         'club_name': settings.CLUB_NAME,
-        'user_full_name': request.user.get_full_name()
+        'user_full_name': user_full_name,
     }
 
 
