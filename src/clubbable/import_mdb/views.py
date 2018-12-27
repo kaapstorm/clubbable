@@ -19,4 +19,4 @@ def upload_mdb(request):
         form = UploadMdbForm()
     context_data = get_context_data(request)
     context_data['form'] = form
-    return render(request, 'import_mdb/upload_mdb.html', {'form': form})
+    return render(request, 'import_mdb/upload_mdb.html', context_data)
