@@ -80,7 +80,8 @@ def import_document(dbx, entry):
     folder = get_folders()[folder_name]
     _, response = dbx.files_download(entry.path_lower)
     with closing(NamedTemporaryFile()) as tmp_file:
-        tmp_file.write(response.content)
+        for chunk in response.iter_content(chunk_size=512):
+            tmp_file.write(chunk)
         Document.objects.create(
             folder=folder,
             description=entry.name,
@@ -114,7 +115,8 @@ def process_changes(username):
                 if is_mdb_file(entry):
                     _, response = dbx.files_download(entry.path_lower)
                     with closing(NamedTemporaryFile()) as tmp_file:
-                        tmp_file.write(response.content)
+                        for chunk in response.iter_content(chunk_size=512):
+                            tmp_file.write(chunk)
                         import_mdb(tmp_file.name)
                 elif is_new_document(entry):
                     import_document(dbx, entry)
