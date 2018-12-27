@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as UserAdminBase
-from club.models import Member, Profile, User
+from club.models import Member, Profile, User, Guest
 
 
 class UserAdmin(UserAdminBase):
+    """
+    UserAdmin class replaces username with email
+    """
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
@@ -28,11 +31,21 @@ class ProfileInline(admin.TabularInline):
 
 
 class MemberAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'year', 'email', 'receives_emails')
+    list_filter = ('receives_emails', 'year')
+    search_fields = ('last_name', 'email')
     inlines = [
         ProfileInline,
     ]
 
 
+class GuestAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'date_of_listing', 'admitted_to_club')
+    list_filter = ('admitted_to_club',)
+    search_fields = ('last_name',)
+
+
 admin.site.register(User, UserAdmin)
-admin.site.register(Member, MemberAdmin)
 admin.site.register(Profile)
+admin.site.register(Member, MemberAdmin)
+admin.site.register(Guest, GuestAdmin)
