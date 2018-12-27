@@ -1,14 +1,6 @@
 {% extends "website/authenticated_base.html" %}
 
 {% block container %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-{{ message.level_tag }}">
-      {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-
     <div class="row">
       {% for tile in tiles %}
       <div class="col-xs-4 col-md-3">
