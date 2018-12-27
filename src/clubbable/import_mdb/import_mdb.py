@@ -55,7 +55,8 @@ def import_table(filename, class_, table, id_, attributes, delete=True):
     start = datetime.now()
 
     output = check_output((MDB_EXPORT_CMD, filename, table))
-    reader = csv.DictReader(output.decode('utf-8').split('\n'))
+    rows = output.decode('utf-8').split('\n')
+    reader = csv.DictReader(rows)
 
     lines = 0
     for row in reader:
@@ -91,7 +92,7 @@ def import_members(filename):
         ('familiar_name', 'FamiliarName', False, None),
         ('year', 'Year', True, None),
         ('email', 'EmailAddress', False, None),
-        ('send_emails', 'ReceivesNoticesElectronically', False, None),
+        ('receives_emails', 'ReceivesNoticesElectronically', False, None),
         ('qualification_art', 'Art', False, None),
         ('qualification_drama', 'Drama', False, None),
         ('qualification_literature', 'Literature', False, None),
@@ -110,7 +111,7 @@ def import_guests(filename):
         ('first_name', 'GuestFirstName', False, None),
         ('initials', 'GuestInitials', False, None),
         ('title', 'GuestTitle', False, None),
-        ('admitted_to_owldom', 'AdmittedToOwldom', False, None),
+        ('admitted_to_club', 'AdmittedToOwldom', False, None),
         ('date_admitted', 'DateAdmitted', True, transform_date),
         ('member_id', 'MemberNum', True, None),
         ('delisted', 'Delisted', False, None),
