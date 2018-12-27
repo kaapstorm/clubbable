@@ -90,10 +90,7 @@ def process_changes(username):
     """
     Call /files/list_folder for the given user and process any changes.
     """
-    try:
-        dropbox_user = User.objects.get(email=username).dropbox_user
-    except User.dropbox_user.RelatedObjectDoesNotExist:
-        return
+    dropbox_user = User.objects.get(email=username).dropboxuser
 
     if dropbox_user.is_locked:
         return
