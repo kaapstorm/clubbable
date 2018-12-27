@@ -58,13 +58,11 @@ def import_members():
 
 
 def import_users():
-    pattern = re.compile('^([^ ]+) (.+)$')
     for original in OriginalUser.objects.all():
         # Split fullname into first_name and last_name
-        matches = pattern.match(original.fullname)
-        if matches:
-            first_name, last_name = matches.groups()
-        else:
+        try:
+            first_name, last_name = original.fullname.split(' ', 1)
+        except ValueError:
             first_name = ''
             last_name = original.fullname
         # Determine last_login, or set to 1 Jan 1970
