@@ -44,7 +44,11 @@ def get_doc_file_ids(folder_name):
     folder
     """
     folder = get_folders()[folder_name]
-    return {d.dropbox_file_id for d in folder.document_set.all()}
+    return {
+        d.dropbox_file_id
+        for d in folder.document_set.all()
+        if d.dropbox_file_id
+    }
 
 
 def get_folder(path):
