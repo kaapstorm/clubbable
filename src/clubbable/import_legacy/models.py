@@ -1,7 +1,6 @@
 """
 These models help to migrate the legacy club database schema to the current
 """
-import re
 from django.db import models
 
 
