@@ -9,3 +9,4 @@ Pillow==5.3.0
 python-magic==0.4.15
 PyYAML==3.13
 quickcache==0.5.1
+six==1.11.0
