@@ -8,7 +8,6 @@ import os
 import re
 from django.core.files import File
 from django.core.files.images import ImageFile
-from django.db import IntegrityError
 import magic
 from club.models import Member, Meeting, Profile, User
 from docs.models import Document, Folder
@@ -57,8 +56,21 @@ def import_members():
         )
 
 
+def get_member(user, original_user):
+    try:
+        member = user.profile.member
+    except User.profile.RelatedObjectDoesNotExist:
+        original_member = original_user.member
+        if original_member is None:
+            return None
+        member = Member.objects.get_or_none(pk=original_member.id)
+        if member:
+            Profile.objects.create(user=user, member=member)
+    return member
+
+
 def import_users():
-    for original in OriginalUser.objects.all():
+    for original in OriginalUser.objects.select_related('member').all():
         # Check whether User has already exists
         if User.objects.filter(email=original.email).count():
             continue
@@ -85,12 +97,10 @@ def import_users():
             last_login=last_login,
             date_joined=last_login,
         )
-        try:
-            # Saving user will create a profile if email addresses match
-            user.profile.member.receives_emails = original.notify_by_email
-            user.profile.member.save()
-        except User.profile.RelatedObjectDoesNotExist:
-            pass
+        member = get_member(user, original)
+        if member:
+            member.receives_emails = original.notify_by_email
+            member.save()
 
 
 def import_cartoons(files_path):
