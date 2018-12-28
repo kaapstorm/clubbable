@@ -1,11 +1,12 @@
 {% extends "website/base.html" %}
+{% load static %}
 
 {% block nav %}
   <div class="container-fluid">
     <button type="button"
             class="navbar-toggle collapsed"
             data-toggle="collapse"
-            data-target="#navbar-collapse-1"
+            data-target="#bs-example-navbar-collapse-1"
             aria-expanded="false">
       <span class="sr-only">Toggle navigation</span>
       <span class="icon-bar"></span>
@@ -19,21 +20,19 @@
           <i class="fas fa-home"></i>
         </a>
       </div>
-      <div class="navbar-right">
-        Welcome, <a href="#">{{ user_full_name }}</a>.
-        | <a href="{% url 'logout' %}">Log out</a>
-      </div>
     </div>
   </div>
 {% endblock %}
 
-{% block messageblock %}
-  {% for message in messages %}
-  <div class="alert alert-{{ message.level_tag }} alert-dismissible" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    {{ message }}
-  </div>
-  {% endfor %}
+{% block container %}
+    <div class="jumbotron">
+      <header class="cl-serif cl-space-after">
+        <h2>Logged out</h2>
+      </header>
+
+      <div class="cl-serif">
+        <p>You have logged out successfully.</p>
+        <p><a href="{% url 'login' %}">Log in again</a></p>
+      </div>
+    </div>
 {% endblock %}

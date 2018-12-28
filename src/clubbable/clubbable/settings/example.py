@@ -173,6 +173,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = '/'
+
 # Change the tag for error messages to "warning" so that it works nicely
 # with Bootstrap classes
 DEFAULT_TAGS[ERROR] = 'warning'
