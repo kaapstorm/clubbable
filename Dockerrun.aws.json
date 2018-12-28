@@ -25,13 +25,7 @@
       "name": "rabbit",
       "image": "rabbitmq",
       "essential": true,
-      "memory": 128,
-      "portMappings": [
-        {
-          "hostPort": 5672,
-          "containerPort": 5672
-        }
-      ]
+      "memory": 128
     },
     {
       "name": "app",
