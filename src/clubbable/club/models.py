@@ -49,6 +49,7 @@ class User(AbstractUser):
             # Assume users without corresponding members want to receive
             # emails
             return True
+    receives_emails.boolean = True  # For pretty icon in admin site
 
 
 class GetOrNoneManager(models.Manager):
