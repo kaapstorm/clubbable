@@ -22,7 +22,6 @@ class User(AbstractUser):
     """
     Custom User model where the username is the email address
     """
-
     username = None
     email = models.EmailField(
         _('email address'),
@@ -50,6 +49,23 @@ class User(AbstractUser):
             # emails
             return True
     receives_emails.boolean = True  # For pretty icon in admin site
+
+    @staticmethod
+    def create_profile(sender, instance, created, **kwargs):
+        if created:
+            try:
+                member = Member.objects.get(email=instance.email)
+            except (
+                Member.DoesNotExist,
+                # There is no unique constraint on Member email addresses
+                Member.MultipleObjectsReturned,
+            ):
+                pass
+            else:
+                Profile.objects.create(user=instance, member=member)
+
+
+post_save.connect(User.create_profile, sender=User)
 
 
 class GetOrNoneManager(models.Manager):
@@ -254,20 +270,3 @@ class Profile(models.Model):
 
     def __str__(self):
         return '%s (%s)' % (self.user, self.member)
-
-    @staticmethod
-    def create_profile(sender, instance, created, **kwargs):
-        if created:
-            try:
-                member = Member.objects.get(email=instance.email)
-            except (
-                Member.DoesNotExist,
-                # There is no unique constraint on Member email addresses
-                Member.MultipleObjectsReturned,
-            ):
-                pass
-            else:
-                Profile.objects.create(user=instance, member=member)
-
-
-post_save.connect(Profile.create_profile, sender=User)
