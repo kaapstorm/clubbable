@@ -2,6 +2,8 @@ from contextlib import contextmanager, closing
 from tempfile import NamedTemporaryFile
 from celery import shared_task
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import UploadedFile
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
 from club.models import User
@@ -79,15 +81,14 @@ def import_document(dbx, entry):
     folder_name = get_folder(entry.path_lower)
     folder = get_folders()[folder_name]
     _, response = dbx.files_download(entry.path_lower)
-    with closing(NamedTemporaryFile()) as tmp_file:
-        for chunk in response.iter_content(chunk_size=512):
-            tmp_file.write(chunk)
-        Document.objects.create(
-            folder=folder,
-            description=entry.name,
-            dropbox_file_id=entry.id,
-            file=tmp_file.name,
-        )
+    content_file = ContentFile(content=response.content, name=entry.name)
+    document = Document(
+        folder=folder,
+        description=entry.name,
+        dropbox_file_id=entry.id,
+        file=UploadedFile(content_file),
+    )
+    document.save()
 
 
 @shared_task
