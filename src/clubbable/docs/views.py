@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -10,7 +12,7 @@ from mailer.tasks import send_doc
 from website.views import ClubbableContextMixin, get_context_data
 
 
-class DocList(ListView, ClubbableContextMixin):
+class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
     context_object_name = 'docs'
 
     def get_folder(self):
@@ -25,6 +27,7 @@ class DocList(ListView, ClubbableContextMixin):
         return self.get_folder().document_set.all()
 
 
+@user_passes_test(lambda u: u.is_staff)
 def send(request, folder_id, pk):
     if request.method == 'POST':
         to = request.POST['to']
@@ -43,6 +46,7 @@ def send(request, folder_id, pk):
     return render(request, 'docs/send_doc.html', context_data)
 
 
+@login_required
 def download(request, folder_id, pk, filename):
     """
     Return doc as an HTTP response attachment
