@@ -28,6 +28,7 @@ class ClubbableContextMixin(ContextMixin):
 
 
 class LandingView(LoginView, ClubbableContextMixin):
+    template_name = 'website/landing.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
