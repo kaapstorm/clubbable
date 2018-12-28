@@ -97,6 +97,5 @@ class GuestAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Profile)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Guest, GuestAdmin)
