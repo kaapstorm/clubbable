@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -8,6 +9,7 @@ from import_mdb.tasks import import_uploaded_mdb
 from website.views import get_context_data
 
 
+@user_passes_test(lambda u: u.is_staff)
 def upload_mdb(request):
     if request.method == 'POST':
         form = UploadMdbForm(request.POST, request.FILES)

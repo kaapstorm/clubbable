@@ -6,6 +6,7 @@ from functools import wraps
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.http import (
     HttpResponseRedirect,
     HttpResponseForbidden,
@@ -54,11 +55,13 @@ def dropbox_required(view_func):
     return wrapped
 
 
+@user_passes_test(lambda u: u.is_staff)
 def dropbox_auth_start(request):
     authorize_url = _get_dropbox_auth_flow(request).start()
     return HttpResponseRedirect(authorize_url)
 
 
+@user_passes_test(lambda u: u.is_staff)
 def dropbox_auth_finish(request):
     try:
         oauth_result = (
@@ -88,6 +91,7 @@ def dropbox_auth_finish(request):
     return HttpResponseRedirect(reverse('dashboard'))
 
 
+@user_passes_test(lambda u: u.is_staff)
 def dropbox_logout(request):
     dropbox_user = DropboxUser.objects.get(user=request.user)
     dropbox_user.access_token = ''
@@ -96,6 +100,7 @@ def dropbox_logout(request):
     return HttpResponseRedirect(reverse('dashboard'))
 
 
+@user_passes_test(lambda u: u.is_staff)
 @dropbox_required
 def check_dropbox(request):
     """
