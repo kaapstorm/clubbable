@@ -1,0 +1,3 @@
+[submodule "src/submodules/docker-nginx-certbot"]
+	path = src/submodules/docker-nginx-certbot
+	url = git@github.com:JonasAlfredsson/docker-nginx-certbot.git

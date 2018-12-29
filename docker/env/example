@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ "$0" = "$BASH_SOURCE" ]
+then
+    echo 'Use "source" to load the environment variables into the current shell. e.g.'
+    echo "    \$ source $BASH_SOURCE"
+    exit 1
+fi
+
+# Target environment we are building for / deploying to
+export TARGET_ENV=example
+
+# Server name used in SSL certificate path
+export PRIMARY_DOMAIN=example.com
+
+# nginx server names
+export SERVER_NAMES="example.com www.example.com other.example.net"
+
+# Email address used by Certbot to notify of cert-related issues
+export CERTBOT_EMAIL=owner@example.com
+
