@@ -1,12 +1,5 @@
 #!/bin/bash
 
-BRANCH=`git branch | egrep '^\*' | cut -d\  -f2`
-
-if [ "$BRANCH" != "master" ] ; then
-    echo "Check out master and try again."
-    exit 1
-fi
-
 rm -f clubbable.tar.gz
 git archive --format=tar.gz --prefix=clubbable/ HEAD > clubbable.tar.gz
 docker build --tag=clubbable_app:latest .

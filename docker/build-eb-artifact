@@ -1,12 +1,5 @@
 #!/bin/bash
 
-BRANCH=`git branch | egrep '^\*' | cut -d\  -f2`
-
-if [ "$BRANCH" != "master" ] ; then
-    echo "Check out master and try again."
-    exit 1
-fi
-
 rm -f clubbable-eb.zip
 git archive --format=zip HEAD > clubbable-eb.zip
 src/clubbable/manage.py collectstatic --noinput --settings clubbable.settings.production
