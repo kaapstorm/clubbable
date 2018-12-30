@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CONTAINER=`eb ssh -c "sudo docker ps" | grep 'kaapstorm/clubbable:latest' | awk '{ print $1; }'`
+
+echo Container ID: $CONTAINER
+echo You can now open a shell with:
+echo $ eb ssh
+echo $ sudo docker exec -i -t $CONTAINER /bin/bash
