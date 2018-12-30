@@ -1,6 +1,0 @@
-#!/bin/bash
-
-rm -f clubbable.tar.gz
-git archive --format=tar.gz --prefix=clubbable/ HEAD > clubbable.tar.gz
-src/clubbable/manage.py collectstatic --noinput --settings clubbable.settings.development
-docker-compose build --build-arg target=development

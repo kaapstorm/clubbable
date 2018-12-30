@@ -9,7 +9,7 @@ do
     case $key in
         -i|--build-image)
         # Build docker image, tag and push
-        docker/build-prod-image
+        docker/build-image
         shift
         ;;
         -a|--build-artifact)

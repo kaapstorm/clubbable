@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ -z "$TARGET_ENV" ]
+then
+    echo Source environment variables using
+    echo "    \$ source docker/env/<your target environment>"
+    exit 2
+fi
+
+git archive --format=tar.gz --prefix=clubbable/ HEAD > clubbable.tar.gz
+docker build --build-arg target=$TARGET_ENV --tag=clubbable_app:latest .
+docker tag clubbable_app:latest kaapstorm/clubbable:latest
+docker push kaapstorm/clubbable:latest
+rm -f clubbable.tar.gz
