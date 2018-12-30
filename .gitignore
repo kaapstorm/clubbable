@@ -8,6 +8,9 @@ src/clubbable/clubbable/db
 src/clubbable/clubbable/static
 src/clubbable/clubbable/media
 
+# Environment-specific files
+Dockerrun.aws.json
+
 # git archive for Docker image and EB
 clubbable.tar.gz
 clubbable-eb.zip
