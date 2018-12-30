@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import ListView
@@ -57,11 +57,4 @@ def download(request, folder_id, pk, filename):
     :param filename: Makes the URL to look nice, but not used
     """
     doc = get_object_or_404(Document, pk=pk)
-    mime = magic.Magic(mime=True)
-    file_path = settings.MEDIA_ROOT + doc.file.name
-    content_type = mime.from_file(file_path)
-    response = HttpResponse(doc.file.read(), content_type=content_type)
-    response['Content-Length'] = doc.file.size
-    response['Content-Disposition'] = ('attachment; '
-                                       'filename="%s"' % doc.filename)
-    return response
+    return FileResponse(doc.file, as_attachment=True)
