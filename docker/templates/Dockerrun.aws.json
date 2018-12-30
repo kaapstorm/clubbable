@@ -18,6 +18,12 @@
       "host": {
         "sourcePath": "/var/app/current/src/clubbable/clubbable/static"
       }
+    },
+    {
+      "name": "nginx_secrets",
+      "host": {
+        "sourcePath": "/var/app/current/docker/nginx/secrets"
+      }
     }
   ],
   "containerDefinitions": [
@@ -25,13 +31,13 @@
       "name": "rabbit",
       "image": "rabbitmq",
       "essential": true,
-      "memory": 128
+      "memoryReservation": 256
     },
     {
       "name": "app",
       "image": "kaapstorm/clubbable:latest",
       "essential": true,
-      "memory": 512,
+      "memoryReservation": 384,
       "links": ["rabbit"],
       "mountPoints": [
         {
@@ -42,27 +48,37 @@
       ]
     },
     {
-      "name": "nginx",
-      "image": "nginx",
+      "name": "nginx_certbot",
+      "image": "jonasal/nginx-certbot:latest",
       "essential": true,
-      "memory": 128,
+      "environment" : [
+        { "name" : "CERTBOT_EMAIL", "value" : "{{ CERTBOT_EMAIL }}" }
+      ],
+      "memoryReservation": 256,
       "portMappings": [
         {
           "hostPort": 80,
           "containerPort": 80
+        },
+        {
+          "hostPort": 443,
+          "containerPort": 443
         }
       ],
       "links": ["app"],
       "mountPoints": [
         {
           "sourceVolume": "nginx_conf_d",
-          "containerPath": "/etc/nginx/conf.d",
-          "readOnly": true
+          "containerPath": "/etc/nginx/conf.d"
         },
         {
           "sourceVolume": "static_root",
           "containerPath": "/usr/share/nginx/html",
           "readOnly": true
+        },
+        {
+          "sourceVolume": "nginx_secrets",
+          "containerPath": "/etc/letsencrypt"
         }
       ]
     }
