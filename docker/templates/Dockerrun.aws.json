@@ -22,7 +22,7 @@
     {
       "name": "nginx_secrets",
       "host": {
-        "sourcePath": "/var/app/current/docker/nginx/secrets"
+        "sourcePath": "{{ NGINX_SECRETS_VOLUME }}"
       }
     }
   ],

@@ -19,3 +19,5 @@ export SERVER_NAMES="example.com www.example.com other.example.net"
 # Email address used by Certbot to notify of cert-related issues
 export CERTBOT_EMAIL=owner@example.com
 
+# Path on host to mount as nginx_secrets volume
+export NGINX_SECRETS_VOLUME=/media/ebs_vol1/nginx_secrets
