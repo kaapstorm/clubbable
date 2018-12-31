@@ -36,15 +36,21 @@ DROPBOX_APP_SECRET = 'app_secret'
 
 # Mailgun settings
 MAILGUN_DOMAIN = 'mg.example.com'
-CLUB_DOMAIN = 'example.com'  # Used for mailing lists
 MAILGUN_API_KEY = 'key-123456'
+EMAIL_HOST_USER = 'postmaster@mg.example.com'
+EMAIL_HOST_PASSWORD = 'Passw0rd!'
+EMAIL_HOST = 'smtp.mailgun.org'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 # Mail settings for outgoing mail
-SMTP_SERVER = 'localhost'
-SMTP_PORT = 0  # 0 = Default
-FROM_ADDRESS = 'The Club Webmaster <webmaster@example.com>'
+FROM_ADDRESS = "The Pirate's Cove <webmaster@example.com>"
 REPLY_TO_ADDRESS = 'The Club Secretary <secretary@example.com>'  # Optional
 BOUNCE_ADDRESS = '<bounce@example.com>'  # Optional
+
+ADMINS = [('Admin', 'admin@example.com')]
+EMAIL_SUBJECT_PREFIX = '[clubbable] '
+SERVER_EMAIL = 'clubbable@example.com'
 
 # ===============
 # Django settings
