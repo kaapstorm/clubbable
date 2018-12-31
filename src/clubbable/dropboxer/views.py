@@ -117,10 +117,9 @@ def webhook(request):
     """
     def get_challenge_response(request_):
         challenge = request_.GET.get('challenge', '')
-        return HttpResponse(challenge, headers={
-            'Content-Type': 'text/plain',
-            'X-Content-Type-Options': 'nosniff',
-        })
+        response = HttpResponse(challenge, content_type='text/plain')
+        response['X-Content-Type-Options'] = 'nosniff'
+        return response
 
     def verify_signature(request_):
         signature = request_.headers.get('X-Dropbox-Signature')
