@@ -18,6 +18,7 @@ cat docker/templates/Dockerrun.aws.json | docker/render-env.py > Dockerrun.aws.j
 # Collect files
 src/clubbable/manage.py collectstatic --noinput --settings clubbable.settings.$TARGET_ENV
 cp src/submodules/docker-nginx-certbot/src/nginx_conf.d/*.conf docker/nginx/conf.d/
+docker/dl-secrets
 zip -r clubbable-eb.zip src/clubbable/clubbable/static
 zip clubbable-eb.zip src/clubbable/clubbable/settings/*.py
 zip clubbable-eb.zip docker/nginx/conf.d/*.conf
