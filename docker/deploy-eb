@@ -2,6 +2,14 @@
 
 VERSION=`date +%Y.%m.%d.%H.%M.%S`
 
+echo "Deploying clubbable to $TARGET_ENV with label v.$VERSION"
+sleep 1
+echo -n .
+sleep 1
+echo -n .
+sleep 1
+echo .
+
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -20,5 +28,4 @@ do
     esac
 done
 
-echo "Deploying clubbable-eb.zip to clubbable-env with label v.$VERSION"
 eb deploy --label=v.$VERSION --staged clubbable-env
