@@ -49,7 +49,7 @@
     },
     {
       "name": "nginx_certbot",
-      "image": "jonasal/nginx-certbot:latest",
+      "image": "kaapstorm/nginx-certbot:latest",
       "essential": true,
       "environment" : [
         { "name" : "CERTBOT_EMAIL", "value" : "{{ CERTBOT_EMAIL }}" }
