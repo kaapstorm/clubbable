@@ -7,12 +7,14 @@ from functools import wraps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.core.mail import mail_admins
 from django.http import (
     HttpResponseRedirect,
     HttpResponseForbidden,
     HttpResponseBadRequest,
     HttpResponse,
 )
+from django.http.request import split_domain_port
 from django.urls import reverse
 from dropbox import DropboxOAuth2Flow
 from dropbox.oauth import (
@@ -32,6 +34,11 @@ logger = logging.getLogger(__name__)
 
 def _get_dropbox_auth_flow(request):
     redirect_uri = request.build_absolute_uri(reverse('dropbox_auth_finish'))
+    domain, port = split_domain_port(request.get_host())
+    local_domains = ('localhost', '127.0.0.1', '[::1]')
+    if (request.scheme == 'http' and domain not in local_domains):
+        # Force redirect_uri to use https, even if scheme is http
+        redirect_uri = 'https://' + redirect_uri[7:]
     return DropboxOAuth2Flow(
         settings.DROPBOX_APP_KEY,
         settings.DROPBOX_APP_SECRET,
