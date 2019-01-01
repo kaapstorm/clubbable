@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import (
     urls as auth_urls,
     views as auth_views,
 )
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.static import serve
 from docs import urls as docs_urls
 from galleries import urls as galleries_urls
 from import_mdb import urls as import_mdb_urls
@@ -28,3 +30,10 @@ urlpatterns = [
     path('accounts/', include(auth_urls)),
     path('admin/', admin.site.urls),
 ]
+
+if settings.DEBUG :
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
