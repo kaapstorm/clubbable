@@ -32,7 +32,7 @@ class ClubbableContextMixin(ContextMixin):
 
 
 class LandingView(LoginView, ClubbableContextMixin):
-    template_name = 'website/landing.html'
+    template_name = 'club/landing.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,4 +73,4 @@ def dashboard(request):
     context.update({
         'tiles': _get_tiles(request),
     })
-    return render(request, 'website/dashboard.html', context)
+    return render(request, 'club/dashboard.html', context)

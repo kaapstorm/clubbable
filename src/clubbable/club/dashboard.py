@@ -8,6 +8,6 @@ def get_tiles(request):
     """
     Return HTML tiles for the dashboard
     """
-    template = loader.get_template('website/members_tile.html')
+    template = loader.get_template('club/members_tile.html')
     tile = template.render()
     return [tile]
