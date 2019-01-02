@@ -1,0 +1,19 @@
+{% extends "website/authenticated_base.html" %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">
+    Members
+  </li>
+{% endblock %}
+
+{% block container %}
+  <h3>Members</h3>
+  <table class="table table-hover">
+    {% for member in members %}
+    <tr>
+      <td>{{ member }}</td>
+      <td>{{ member.year }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

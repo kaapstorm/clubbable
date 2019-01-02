@@ -1,10 +1,13 @@
 import yaml
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
+from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
 from markdown import markdown
+from club.models import Member
 
 
 def get_context_data(request):
@@ -40,6 +43,11 @@ class LandingView(LoginView, ClubbableContextMixin):
             'content_html': markdown(data['content_markdown']),
         })
         return context
+
+
+class MemberList(LoginRequiredMixin, ListView, ClubbableContextMixin):
+    model = Member
+    context_object_name = 'members'
 
 
 def _get_tiles(request):

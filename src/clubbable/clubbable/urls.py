@@ -10,12 +10,14 @@ from docs import urls as docs_urls
 from galleries import urls as galleries_urls
 from import_mdb import urls as import_mdb_urls
 from dropboxer import urls as dropbox_urls
-from website.views import dashboard, LandingView
+from website.views import dashboard, LandingView, MemberList
+
 
 admin.autodiscover()
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
+    path('member/', MemberList.as_view(), name='member_list'),
     path('doc/', include(docs_urls)),
     path('img/', include(galleries_urls)),
     path('dropbox/', include(dropbox_urls)),
