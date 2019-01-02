@@ -12,33 +12,34 @@
 {% endblock %}
 
 {% block container %}
-  <div class="jumbotron">
+  <div>
     <h3>Send "{{ doc }}"</h3>
-    <form role="form" method="post"
-          action="{% url 'doc_send' doc.folder.id doc.id %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_to">To:</label>
-        <select id="id_to"
-                name="to"
-                class="form-control">
-          <option>Myself</option>
-          <option>Everyone</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="id_subject">Subject:</label>
-        <input id="id_subject"
-               name="subject"
-               class="form-control"
-               value="[{{ club_name }}] {{ doc.description }}" />
-      </div>
-      <div class="form-group">
-        <label for="id_text">Message*:</label>
-        <textarea id="id_text"
-                  name="text"
-                  class="form-control"
-                  rows="7">
+    <div class="jumbotron">
+      <form role="form" method="post"
+            action="{% url 'doc_send' doc.folder.id doc.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_to">To:</label>
+          <select id="id_to"
+                  name="to"
+                  class="form-control">
+            <option>Myself</option>
+            <option>Everyone</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="id_subject">Subject:</label>
+          <input id="id_subject"
+                 name="subject"
+                 class="form-control"
+                 value="[{{ club_name }}] {{ doc.description }}" />
+        </div>
+        <div class="form-group">
+          <label for="id_text">Message*:</label>
+          <textarea id="id_text"
+                    name="text"
+                    class="form-control"
+                    rows="7">
 Dear %recipient.full_name%,
 
 Please find {{ doc }} attached to this e-mail.
@@ -46,11 +47,12 @@ Please find {{ doc }} attached to this e-mail.
 Kind regards,
 
 {{ club_name }}</textarea>
-        <small>
-          *Supports styling with <a href="https://daringfireball.net/projects/markdown/" target="_blank">Markdown</a>.
-        </small>
-      </div>
-      <button type="submit" class="btn btn-default">Send</button>
-    </form>
+          <small>
+            *Supports styling with <a href="https://daringfireball.net/projects/markdown/" target="_blank">Markdown</a>.
+          </small>
+        </div>
+        <button type="submit" class="btn btn-default">Send</button>
+      </form>
+    </div>
   </div>
 {% endblock %}
