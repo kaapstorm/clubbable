@@ -31,6 +31,7 @@ class Gallery(models.Model):
 class Image(models.Model):
     gallery = models.ForeignKey(Gallery, models.PROTECT)
     description = models.CharField(max_length=255, blank=True)
+    dropbox_file_id = models.CharField(max_length=255, blank=True)
     meeting = models.ForeignKey(
         Meeting, models.SET_NULL,
         null=True, blank=True,
