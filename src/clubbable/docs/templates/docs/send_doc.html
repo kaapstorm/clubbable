@@ -1,5 +1,16 @@
 {% extends "website/authenticated_base.html" %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'doc_list' doc.folder.id %}">
+      {{ doc.folder }}
+    </a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    Send "{{ doc }}"
+  </li>
+{% endblock %}
+
 {% block container %}
   <div class="jumbotron">
     <h3>Send "{{ doc }}"</h3>

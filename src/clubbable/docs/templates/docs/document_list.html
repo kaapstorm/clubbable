@@ -1,5 +1,11 @@
 {% extends "website/authenticated_base.html" %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">
+    {{ folder }}
+  </li>
+{% endblock %}
+
 {% block container %}
   <table class="table table-hover">
     <thead>
