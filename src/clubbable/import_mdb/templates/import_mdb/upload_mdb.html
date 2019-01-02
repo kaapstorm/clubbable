@@ -1,23 +1,31 @@
 {% extends "website/authenticated_base.html" %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">
+    Upload Access database
+  </li>
+{% endblock %}
+
 {% block container %}
-  <div class="jumbotron">
+  <div>
     <h3>Upload Access database</h3>
-    <form role="form"
-          enctype="multipart/form-data"
-          method="post"
-          action="{% url 'upload_mdb' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        {% if form.errors %}<div>{{ form.errors }}</div>{% endif %}
-        <input id="id_access_db"
-               name="access_db"
-               class="form-control-file"
-               required="required"
-               aria-required="true"
-               type="file" />
-      </div>
-      <button type="submit" class="btn btn-default">Upload</button>
-    </form>
+    <div class="jumbotron">
+      <form role="form"
+            enctype="multipart/form-data"
+            method="post"
+            action="{% url 'upload_mdb' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          {% if form.errors %}<div>{{ form.errors }}</div>{% endif %}
+          <input id="id_access_db"
+                 name="access_db"
+                 class="form-control-file"
+                 required="required"
+                 aria-required="true"
+                 type="file" />
+        </div>
+        <button type="submit" class="btn btn-default">Upload</button>
+      </form>
+    </div>
   </div>
 {% endblock %}
