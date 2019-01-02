@@ -187,12 +187,13 @@ class Member(models.Model):
             return
         if not member.email:
             return
+        old_address = user.email
         user.email = member.email
         user.save()
         mail_admins(
             'User address changed',
             'The e-mail address of {} has changed from "{}" to "{}".'.format(
-                member, user.email, member.email)
+                member, old_address, member.email)
         )
 
 
