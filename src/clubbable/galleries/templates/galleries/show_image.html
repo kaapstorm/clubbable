@@ -1,0 +1,54 @@
+{% extends "website/authenticated_base.html" %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'image_list' image.gallery.id %}">
+      {{ image.gallery }}
+    </a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    {{ image }}
+  </li>
+{% endblock %}
+
+{% block container %}
+  <div>
+    <h3>{{ image }}</h3>
+    <div><img src="{{ image.display.url }}" /></div>
+
+    {% if image.members.all.count > 1 %}
+    <div>Members:
+      <ul>
+        {% for member in image.members.all %}
+        <li>{{ member }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% elif image.members.all.count == 1 %}
+    <div>{{ image.members.first }}</div>
+    {% endif %}
+
+    {% if image.guests.all.count > 1 %}
+    <div>Guests:
+      <ul>
+        {% for guest in image.guests.all %}
+        <li>{{ guest }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% elif image.guests.all.count == 1 %}
+    <div>{{ image.guests.first }}</div>
+    {% endif %}
+
+    {% if image.creator %}
+    <div>by {{ image.creator }}</div>
+    {% endif %}
+
+    <p>
+      <a href="{% url 'image_download' image.gallery.id image.id image.filename %}">
+        Download full-sized image
+      </a>
+    </p>
+
+  </div>
+{% endblock %}

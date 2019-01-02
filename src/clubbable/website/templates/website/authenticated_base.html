@@ -15,9 +15,14 @@
 
     <div class="collapse navbar-collapse" id="navbar-collapse-1">
       <div class="navbar-left">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">
-          <i class="fas fa-home"></i>
-        </a>
+        <ol class="breadcrumb">
+          <li class="breadcrumb">
+            <a href="{% url 'dashboard' %}">
+              <i class="fas fa-home"></i>
+            </a>
+          </li>
+          {% block breadcrumbs %}{% endblock %}
+        </ol>
       </div>
       <div class="navbar-right">
         Welcome, <a href="#">{{ user_full_name }}</a>.

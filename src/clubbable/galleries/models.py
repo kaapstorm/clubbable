@@ -1,4 +1,5 @@
 import datetime
+import os
 import posixpath
 from itertools import chain
 from django.db import models
@@ -65,3 +66,7 @@ class Image(models.Model):
         if self.meeting:
             return '%s: %s' % (self.meeting, people)
         return people
+
+    @property
+    def filename(self):
+        return self.original.name.split(os.sep)[-1]

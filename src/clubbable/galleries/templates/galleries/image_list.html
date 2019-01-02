@@ -1,5 +1,11 @@
 {% extends "website/authenticated_base.html" %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">
+    {{ gallery }}
+  </li>
+{% endblock %}
+
 {% block container %}
   <h2>{{ gallery }}</h2>
   <div class="container-fluid">
@@ -7,7 +13,7 @@
       {% for image in images %}
       <div class="col-xs-4 col-md-3">
         <div class="well text-center">
-          <a href="{{ image.display.url }}" target="_blank">
+          <a href="{% url 'image_show' image.gallery.id image.id %}">
             <img src="{{ image.thumbnail.url }}"
                  alt="{{ image }}"
                  class="img-responsive img-thumbnail" /><br/>

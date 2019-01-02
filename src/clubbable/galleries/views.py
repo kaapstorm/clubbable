@@ -1,8 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 from galleries.models import Gallery, Image
-from website.views import ClubbableContextMixin
+from website.views import ClubbableContextMixin, get_context_data
 
 
 class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):
@@ -18,3 +20,16 @@ class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):
 
     def get_queryset(self):
         return self.get_gallery().image_set.all()
+
+
+@login_required
+def show(request, gallery_id, pk):
+    context_data = get_context_data(request)
+    context_data['image'] = get_object_or_404(Image, pk=pk)
+    return render(request, 'galleries/show_image.html', context_data)
+
+
+@login_required
+def download(request, gallery_id, pk, filename):
+    image = get_object_or_404(Image, pk=pk)
+    return FileResponse(image.original, as_attachment=True)
