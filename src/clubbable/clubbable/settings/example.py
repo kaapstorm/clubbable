@@ -25,7 +25,7 @@ CLUB_NAME = "The Pirate's Cove"
 MEMBER_TITLE = 'Captain'
 
 # Support importing from legacy database
-IMPORT_LEGACY = True
+IMPORT_LEGACY = False
 
 # Filename of club's Access database, or `None` to disable
 MDB_FILENAME = 'club.mdb'
