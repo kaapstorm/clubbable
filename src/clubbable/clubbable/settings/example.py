@@ -87,7 +87,6 @@ INSTALLED_APPS = [
     'galleries',
     'import_mdb',
     'mailer',
-    'website',
 ]
 if IMPORT_LEGACY:
     INSTALLED_APPS.append('import_legacy')
