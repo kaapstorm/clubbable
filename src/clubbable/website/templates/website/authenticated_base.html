@@ -25,8 +25,8 @@
         </ol>
       </div>
       <div class="navbar-right">
-        Welcome, <a href="#">{{ user_full_name }}</a>.
-        | <a href="{% url 'logout' %}">Log out</a>
+        Welcome, {{ user_full_name }} |
+        <a href="{% url 'logout' %}">Log out</a>
       </div>
     </div>
   </div>
