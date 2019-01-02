@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from import_mdb.forms import UploadMdbForm
 from import_mdb.tasks import import_uploaded_mdb
-from website.views import get_context_data
+from club.views import get_context_data
 
 
 @user_passes_test(lambda u: u.is_staff)

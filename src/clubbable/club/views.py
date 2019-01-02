@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
 from markdown import markdown
+
 from club.models import Member
 
 

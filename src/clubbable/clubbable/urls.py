@@ -6,12 +6,11 @@ from django.contrib.auth import (
 )
 from django.urls import path, include, re_path
 from django.views.static import serve
+from club.views import LandingView, MemberList, dashboard
 from docs import urls as docs_urls
+from dropboxer import urls as dropbox_urls
 from galleries import urls as galleries_urls
 from import_mdb import urls as import_mdb_urls
-from dropboxer import urls as dropbox_urls
-from website.views import dashboard, LandingView, MemberList
-
 
 admin.autodiscover()
 

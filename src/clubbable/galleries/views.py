@@ -4,7 +4,7 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 from galleries.models import Gallery, Image
-from website.views import ClubbableContextMixin, get_context_data
+from club.views import get_context_data, ClubbableContextMixin
 
 
 class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):

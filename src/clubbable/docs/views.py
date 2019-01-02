@@ -9,7 +9,7 @@ from django.views.generic import ListView
 import magic
 from docs.models import Document, Folder
 from mailer.tasks import send_doc
-from website.views import ClubbableContextMixin, get_context_data
+from club.views import get_context_data, ClubbableContextMixin
 
 
 class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
