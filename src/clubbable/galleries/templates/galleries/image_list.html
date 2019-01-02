@@ -1,7 +1,12 @@
 {% extends "club/authenticated_base.html" %}
 
 {% block breadcrumbs %}
-  <li class="breadcrumb-item active" aria-current="page">
+  <li>
+    <a href="{% url 'dashboard' %}">
+      <i class="fas fa-home"></i>
+    </a>
+  </li>
+  <li class="active">
     {{ gallery }}
   </li>
 {% endblock %}

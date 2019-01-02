@@ -16,17 +16,16 @@
     <div class="collapse navbar-collapse" id="navbar-collapse-1">
       <div class="navbar-left">
         <ol class="breadcrumb">
-          <li class="breadcrumb">
-            <a href="{% url 'dashboard' %}">
-              <i class="fas fa-home"></i>
-            </a>
+          {% block breadcrumbs %}
+          <li class="active">
+            <i class="fas fa-home"></i>
           </li>
-          {% block breadcrumbs %}{% endblock %}
+          {% endblock %}
         </ol>
       </div>
-      <div class="navbar-right">
+      <div class="navbar-right navbar-text">
         Welcome, {{ user_full_name }} |
-        <a href="{% url 'logout' %}">Log out</a>
+        <a class="navbar-link" href="{% url 'logout' %}">Log out</a>
       </div>
     </div>
   </div>
