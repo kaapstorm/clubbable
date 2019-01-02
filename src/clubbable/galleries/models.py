@@ -44,7 +44,7 @@ class Image(models.Model):
 
     original = models.ImageField(upload_to=_get_upload_path)
     display = ImageSpecField(source='original',
-                             processors=[ResizeToFit(600, 370)],
+                             processors=[ResizeToFit(1024, 768)],
                              format='JPEG',
                              options={'quality': 90})
     thumbnail = ImageSpecField(source='original',
