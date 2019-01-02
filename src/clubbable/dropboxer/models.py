@@ -10,3 +10,6 @@ class DropboxUser(models.Model):
     is_locked = models.BooleanField(default=False)
 
     objects = GetOrNoneManager()
+
+    def __str__(self):
+        return str(self.user)
