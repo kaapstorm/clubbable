@@ -1,16 +1,15 @@
 from contextlib import contextmanager
 from datetime import date
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from club.models import Member, Guest, Meeting
+from club.models import Member, Guest, Meeting, User
 
 
 @contextmanager
 def user_context():
-    details = {'username': 'testy', 'password': 's3cr3t'}
-    user = User(username=details['username'])
+    details = {'email': 'testy@example.com', 'password': 's3cr3t'}
+    user = User(email=details['email'])
     user.set_password(details['password'])
     user.save()
     details['id'] = user.id
@@ -89,10 +88,7 @@ class DashboardViewTests(TestCase):
         The dashboard view should return status 200 if user is authenticated
         """
         with user_context() as user:
-            self.client.post(
-                reverse('login'),
-                {'username': user['username'],
-                 'password': user['password']})
+            self.client.login(email=user['email'], password=user['password'])
             # Check login was successful
             self.assertIn('_auth_user_id', self.client.session)
             self.assertEqual(int(self.client.session['_auth_user_id']),
