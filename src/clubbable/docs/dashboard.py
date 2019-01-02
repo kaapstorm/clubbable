@@ -11,6 +11,7 @@ def get_tiles(request):
     """
     tiles = []
     for folder in Folder.objects.all():
-        template = loader.get_template('docs/folder_tile.html')
-        tiles.append(template.render({'folder': folder}))
+        if folder.document_set.first():
+            template = loader.get_template('docs/folder_tile.html')
+            tiles.append(template.render({'folder': folder}))
     return tiles

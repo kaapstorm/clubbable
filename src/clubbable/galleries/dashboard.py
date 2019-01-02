@@ -11,6 +11,7 @@ def get_tiles(request):
     """
     tiles = []
     for gallery in Gallery.objects.all():
-        template = loader.get_template('galleries/gallery_tile.html')
-        tiles.append(template.render({'gallery': gallery}))
+        if gallery.image_set.first():
+            template = loader.get_template('galleries/gallery_tile.html')
+            tiles.append(template.render({'gallery': gallery}))
     return tiles
