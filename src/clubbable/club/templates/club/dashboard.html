@@ -3,9 +3,12 @@
 {% block container %}
     <div class="row">
       {% for tile in tiles %}
-      <div class="col-xs-4 col-md-3">
-        <div class="well text-center">
-          {{ tile|safe }}
+      <div class="col-3 p-2">
+        <div class="card border text-center align-middle"
+             style="height: 200px;">
+          <div class="m-auto">
+            {{ tile|safe }}
+          </div>
         </div>
       </div>
       {% endfor %}
