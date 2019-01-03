@@ -1,9 +1,11 @@
+import inspect
 from contextlib import contextmanager, closing
 from tempfile import NamedTemporaryFile
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
+from django.core.mail import mail_admins
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
 from club.models import User
@@ -138,6 +140,35 @@ def import_image(dbx, entry):
     image.save()
 
 
+def notify_imported(dropbox_user, mdbs, docs, imgs):
+    message = []
+    if mdbs:
+        message.append('  - Access database "%s"' % mdbs[0])
+    if docs:
+        message.append('  - %s documents' % docs)
+    if imgs:
+        message.append('  - %s images' % imgs)
+    mail_admins(
+        'Imported from Dropbox',
+        '%s imported:\n' % dropbox_user + '\n'.join(message)
+    )
+
+
+def notify_multiple_mdbs(mdbs):
+    mail_admins(
+        'Multiple Access databases in Dropbox',
+        inspect.cleandoc("""
+        Found multiple Access databases:
+        {mdbs}
+
+        Please ensure that only one file is named "{name}",
+        or change MDB_FILENAME in settings.""".format(
+            mdbs='\n'.join(('  - %s' % mdb for mdb in mdbs)),
+            name=settings.MDB_FILENAME
+        ))
+    )
+
+
 @shared_task
 def process_changes(username):
     """
@@ -152,6 +183,9 @@ def process_changes(username):
         dbx = Dropbox(dropbox_user.access_token)
         cursor = dropbox_user.cursor
         has_more = True
+        mdbs = []
+        docs = 0
+        imgs = 0
 
         while has_more:
             if not cursor:
@@ -161,18 +195,27 @@ def process_changes(username):
 
             for entry in result.entries:
                 if is_mdb_file(entry):
-                    _, response = dbx.files_download(entry.path_lower)
-                    with closing(NamedTemporaryFile()) as tmp_file:
-                        for chunk in response.iter_content(chunk_size=512):
-                            tmp_file.write(chunk)
-                        import_mdb(tmp_file.name)
+                    if not mdbs:
+                        # Only import the first one
+                        _, response = dbx.files_download(entry.path_lower)
+                        with closing(NamedTemporaryFile()) as tmp_file:
+                            for chunk in response.iter_content(chunk_size=512):
+                                tmp_file.write(chunk)
+                            import_mdb(tmp_file.name)
+                    mdbs.append(entry.path_lower)
                 elif is_new_document(entry):
                     import_document(dbx, entry)
+                    docs += 1
                 elif is_new_image(entry):
                     import_image(dbx, entry)
+                    imgs += 1
 
             cursor = result.cursor
             has_more = result.has_more
 
         dropbox_user.cursor = cursor
         dropbox_user.save()
+        if len(mdbs) + docs + imgs > 0:
+            notify_imported(dropbox_user, mdbs, docs, imgs)
+        if len(mdbs) > 1:
+            notify_multiple_mdbs(mdbs)

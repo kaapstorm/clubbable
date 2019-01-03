@@ -4,9 +4,11 @@ Import members, guests and meetings from a Microsoft Access database.
 Check table names, and columns to customise for your database.
 """
 import csv
+import inspect
 from datetime import datetime
 import re
 from subprocess import check_output
+from django.core.mail import mail_admins
 from club.models import Member, Meeting, Guest
 
 
@@ -112,9 +114,9 @@ def import_table(filename, class_, table, id_, delete=True):
     rows = output.decode('utf-8').split('\n')
     reader = csv.DictReader(rows)
 
-    lines = 0
+    upserted = 0
+    deleted = 0
     for row in reader:
-        lines += 1
         try:
             obj = class_.objects.get(pk=row[id_])
         except class_.DoesNotExist:
@@ -129,27 +131,50 @@ def import_table(filename, class_, table, id_, delete=True):
                 value = row[column]
             setattr(obj, attr, value)
         obj.save()
+        upserted += 1
     if (
         delete and
-        1 < lines == class_.objects.filter(updated_at__gte=start).count()
+        0 < upserted == class_.objects.filter(updated_at__gte=start).count()
     ):
         # Delete all records not found in import
-        class_.objects.filter(updated_at__lt=start).delete()
+        deleted, __ = class_.objects.filter(updated_at__lt=start).delete()
+    return upserted, deleted
 
 
 def import_members(filename):
-    import_table(filename, Member, 'OwlsPersonalDetails', 'OwlID')
+    return import_table(filename, Member, 'OwlsPersonalDetails', 'OwlID')
 
 
 def import_guests(filename):
-    import_table(filename, Guest, 'Guests', 'GuestID')
+    return import_table(filename, Guest, 'Guests', 'GuestID')
 
 
 def import_meetings(filename):
-    import_table(filename, Meeting, 'Events', 'EventNum')
+    return import_table(filename, Meeting, 'Events', 'EventNum')
 
 
 def import_mdb(filename):
-    import_members(filename)
-    import_guests(filename)
-    import_meetings(filename)
+    member_ups, member_dels = import_members(filename)
+    guest_ups, guest_dels = import_guests(filename)
+    meeting_ups, meeting_dels = import_meetings(filename)
+    mail_admins('Imported Access database', inspect.cleandoc("""
+        Members:
+          - Added/updated: {member_ups}
+          - Deleted: {member_dels}
+
+        Guests:
+          - Added/updated: {guest_ups}
+          - Deleted: {guest_dels}
+
+        Meetings:
+          - Added/updated: {meeting_ups}
+          - Deleted: {meeting_dels}
+        """.format(
+            member_ups=member_ups,
+            member_dels=member_dels,
+            guest_ups=guest_ups,
+            guest_dels=guest_dels,
+            meeting_ups=meeting_ups,
+            meeting_dels=meeting_dels,
+        )
+    ))
