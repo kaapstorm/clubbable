@@ -2,26 +2,13 @@
 {% load static %}
 
 {% block nav %}
-  <div class="container-fluid">
-    <button type="button"
-            class="navbar-toggle collapsed"
-            data-toggle="collapse"
-            data-target="#bs-example-navbar-collapse-1"
-            aria-expanded="false">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbar-collapse-1">
-      <div class="navbar-left">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">
-          <i class="fas fa-home"></i>
-        </a>
-      </div>
-    </div>
-  </div>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="{% url 'dashboard' %}">
+        <i class="fas fa-home"></i>
+      </a>
+    </li>
+  </ol>
 {% endblock %}
 
 {% block container %}

@@ -1,12 +1,12 @@
 {% extends "club/authenticated_base.html" %}
 
 {% block breadcrumbs %}
-  <li>
+  <li class="breadcrumb-item">
     <a href="{% url 'dashboard' %}">
       <i class="fas fa-home"></i>
     </a>
   </li>
-  <li class="active">
+  <li class="breadcrumb-item active">
     Members
   </li>
 {% endblock %}
