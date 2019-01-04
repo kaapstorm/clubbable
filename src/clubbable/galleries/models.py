@@ -54,6 +54,9 @@ class Image(models.Model):
                                format='JPEG',
                                options={'quality': 60})
 
+    class Meta:
+        ordering = ('description',)
+
     def __str__(self):
         return self.name
 

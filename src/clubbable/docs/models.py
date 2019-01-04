@@ -23,6 +23,9 @@ class Document(models.Model):
     dropbox_file_id = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to=_get_upload_path)
 
+    class Meta:
+        ordering = ('description',)
+
     def __str__(self):
         return self.description or self.filename
 
