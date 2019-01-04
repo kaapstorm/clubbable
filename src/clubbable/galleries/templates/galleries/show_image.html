@@ -53,6 +53,10 @@
         {% elif image.guests.all.count == 1 %}
         <li class="list-group-item">{{ image.guests.first }}</li>
         {% endif %}
+
+        {% if image.meeting %}
+        <li class="list-group-item">{{ image.meeting }}</li>
+        {% endif %}
       </ul>
 
       <div class="card-body">
