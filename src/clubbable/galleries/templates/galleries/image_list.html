@@ -18,14 +18,18 @@
       {% for image in images %}
       <div class="col-3 p-2">
         <div class="card border text-center align-middle"
-                     style="height: 200px;">
+             style="height: 200px;">
+          <a href="{% url 'image_show' image.gallery.id image.id %}">
+            <img src="{{ image.thumbnail.url }}"
+                 alt="{{ image }}"
+                 class="card-img-top border border-dark rounded" />
+          </a>
           <div class="card-body m-auto">
-            <a href="{% url 'image_show' image.gallery.id image.id %}">
-              <img src="{{ image.thumbnail.url }}"
-                   alt="{{ image }}"
-                   class="border border-dark rounded" /><br/>
-            </a>
-            <div class="card-text">{{ image }}</div>
+            <p class="card-title">
+              <a href="{% url 'image_show' image.gallery.id image.id %}">
+                {{ image }}
+              </a>
+            </p>
           </div>
         </div>
       </div>

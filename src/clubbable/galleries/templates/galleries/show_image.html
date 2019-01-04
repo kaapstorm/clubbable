@@ -17,43 +17,50 @@
 {% endblock %}
 
 {% block container %}
-  <div>
-    <h3>{{ image }}</h3>
-    <div><img src="{{ image.display.url }}" /></div>
+  <div class="{% if image.original.width > image.original.height %}col-12{% else %}col-8{% endif %}">
+    <div class="card p-2">
+      <h3 class="card-title">{{ image }}</h3>
+      <img src="{{ image.display.url }}"
+           class="card-img-top"/>
 
-    {% if image.members.all.count > 1 %}
-    <div>Members:
-      <ul>
-        {% for member in image.members.all %}
-        <li>{{ member }}</li>
-        {% endfor %}
+      <ul class="list-group list-group-flush">
+        {% if image.creator %}
+        <li class="list-group-item">By {{ image.creator }}</li>
+        {% endif %}
+
+        {% if image.members.all.count > 1 %}
+        <li class="list-group-item">
+          Members:
+          <ul>
+            {% for member in image.members.all %}
+            <li>{{ member }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% elif image.members.all.count == 1 %}
+        <li class="list-group-item">{{ image.members.first }}</li>
+        {% endif %}
+
+        {% if image.guests.all.count > 1 %}
+        <li class="list-group-item">
+          Guests:
+          <ul>
+            {% for guest in image.guests.all %}
+            <li>{{ guest }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% elif image.guests.all.count == 1 %}
+        <li class="list-group-item">{{ image.guests.first }}</li>
+        {% endif %}
       </ul>
+
+      <div class="card-body">
+        <a href="{% url 'image_download' image.gallery.id image.id image.filename %}"
+           class="card-link">
+          <i class="fas fa-download"></i> Download
+        </a>
+      </div>
     </div>
-    {% elif image.members.all.count == 1 %}
-    <div>{{ image.members.first }}</div>
-    {% endif %}
-
-    {% if image.guests.all.count > 1 %}
-    <div>Guests:
-      <ul>
-        {% for guest in image.guests.all %}
-        <li>{{ guest }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% elif image.guests.all.count == 1 %}
-    <div>{{ image.guests.first }}</div>
-    {% endif %}
-
-    {% if image.creator %}
-    <div>by {{ image.creator }}</div>
-    {% endif %}
-
-    <p>
-      <a href="{% url 'image_download' image.gallery.id image.id image.filename %}">
-        Download full-sized image
-      </a>
-    </p>
-
   </div>
 {% endblock %}

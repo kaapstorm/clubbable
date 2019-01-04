@@ -4,7 +4,7 @@ import posixpath
 from itertools import chain
 from django.db import models
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill, ResizeToFit
+from imagekit.processors import ResizeToFit, Thumbnail
 from club.models import Meeting, Member, Guest
 
 
@@ -50,7 +50,7 @@ class Image(models.Model):
                              format='JPEG',
                              options={'quality': 90})
     thumbnail = ImageSpecField(source='original',
-                               processors=[ResizeToFill(100, 75)],
+                               processors=[Thumbnail(200, 100)],
                                format='JPEG',
                                options={'quality': 60})
 
