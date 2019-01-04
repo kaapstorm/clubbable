@@ -24,7 +24,7 @@
                  alt="{{ image }}"
                  class="card-img-top border border-dark rounded" />
           </a>
-          <div class="card-body m-auto">
+          <div class="card-body" style="overflow: hidden;">
             <p class="card-title">
               <a href="{% url 'image_show' image.gallery.id image.id %}">
                 {{ image }}
