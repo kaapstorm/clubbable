@@ -49,6 +49,7 @@ class LandingView(LoginView, ClubbableContextMixin):
 class MemberList(LoginRequiredMixin, ListView, ClubbableContextMixin):
     model = Member
     context_object_name = 'members'
+    paginate_by = 100
 
 
 def _get_tiles(request):

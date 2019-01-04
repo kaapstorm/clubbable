@@ -14,6 +14,8 @@ from club.views import get_context_data, ClubbableContextMixin
 
 class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
     context_object_name = 'docs'
+    paginate_by = 100
+    allow_empty = False
 
     def get_folder(self):
         return get_object_or_404(Folder, pk=self.kwargs['folder_id'])

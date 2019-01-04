@@ -21,4 +21,21 @@
     </tr>
     {% endfor %}
   </table>
+
+  {% if is_paginated %}
+  <div class="pagination">
+    <ol class="breadcrumb">
+      {% for page in paginator.page_range %}
+      <li class="breadcrumb-item{% if page == page_obj.number %} active{% endif %}">
+        {% if page == page_obj.number %}
+        {{ page }}
+        {% else %}
+        <a href="?page={{ page }}">{{ page }}</a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
 {% endblock %}

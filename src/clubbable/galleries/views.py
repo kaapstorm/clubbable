@@ -9,6 +9,8 @@ from club.views import get_context_data, ClubbableContextMixin
 
 class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):
     context_object_name = 'images'
+    paginate_by = 96
+    allow_empty = False
 
     def get_gallery(self):
         return get_object_or_404(Gallery, pk=self.kwargs['gallery_id'])
