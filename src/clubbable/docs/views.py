@@ -31,32 +31,30 @@ class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
 
 @user_passes_test(lambda u: u.is_staff)
 def send(request, folder_id, pk):
+    doc = get_object_or_404(Document, folder__id=folder_id, pk=pk)
     if request.method == 'POST':
         to = request.POST['to']
         send_doc.delay(
             to=request.user.email if to == 'Myself' else to,
             subject=request.POST['subject'],
             message=request.POST['text'],
-            doc_id=pk,
+            doc_id=doc.id,
         )
         messages.info(request, 'Your message is queued for sending.')
         return HttpResponseRedirect(
             reverse('doc_list', kwargs={'folder_id': folder_id})
         )
     context_data = get_context_data(request)
-    context_data['doc'] = get_object_or_404(Document, pk=pk)
+    context_data['doc'] = doc
     return render(request, 'docs/send_doc.html', context_data)
 
 
 @login_required
 def download(request, folder_id, pk, filename):
     """
-    Return doc as an HTTP response attachment
+    Return doc as an attachment.
 
-    :param request: HTTP Request
-    :param folder_id: Keeps the URLs logical, but not used
-    :param pk: The primary key of the document
-    :param filename: Makes the URL to look nice, but not used
+    (`filename` is just to make the URL look nice.)
     """
-    doc = get_object_or_404(Document, pk=pk)
+    doc = get_object_or_404(Document, folder__id=folder_id, pk=pk)
     return FileResponse(doc.file, as_attachment=True)

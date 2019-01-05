@@ -26,12 +26,18 @@ class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):
 
 @login_required
 def show(request, gallery_id, pk):
+    image = get_object_or_404(Image, gallery__id=gallery_id, pk=pk)
     context_data = get_context_data(request)
-    context_data['image'] = get_object_or_404(Image, pk=pk)
+    context_data['image'] = image
     return render(request, 'galleries/show_image.html', context_data)
 
 
 @login_required
 def download(request, gallery_id, pk, filename):
-    image = get_object_or_404(Image, pk=pk)
+    """
+    Return image as an attachment.
+
+    (`filename` is just to make the URL look nice.)
+    """
+    image = get_object_or_404(Image, gallery__id=gallery_id, pk=pk)
     return FileResponse(image.original, as_attachment=True)
