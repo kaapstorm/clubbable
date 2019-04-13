@@ -1,0 +1,17 @@
+version: "3.6"
+
+services:
+  redis:
+    image: redis:5
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:11
+    environment:
+      - POSTGRES_PASSWORD=DevMcPassword
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./src/clubbable/db/pgdata:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
