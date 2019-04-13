@@ -1,19 +1,12 @@
 *.py[cod]
-docker/env/*
-!docker/env/example
+env/*
+!env/example
 src/clubbable/clubbable/settings/*
 !src/clubbable/clubbable/settings/__init__.py
 !src/clubbable/clubbable/settings/example.py
 src/clubbable/clubbable/db
 src/clubbable/clubbable/static
 src/clubbable/clubbable/media
-
-# Environment-specific files
-Dockerrun.aws.json
-
-# git archive for Docker image and EB
-clubbable.tar.gz
-clubbable-eb.zip
 
 # Generated documentation
 doc/_build
@@ -33,8 +26,3 @@ nosetests.xml
 .project
 .pydevproject
 .idea
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
