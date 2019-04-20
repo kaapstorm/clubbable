@@ -157,6 +157,10 @@ elif os.environ['FILE_STORAGE_TYPE'] == 'SFTP':
     SFTP_STORAGE_HOST=os.environ['SFTP_STORAGE_HOST']
     SFTP_STORAGE_ROOT=os.environ['SFTP_STORAGE_ROOT']
     SFTP_STORAGE_PARAMS=json.loads(os.environ['SFTP_STORAGE_PARAMS'])
+elif os.environ['FILE_STORAGE_TYPE'] == 'Dropbox':
+    DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+    DROPBOX_OAUTH2_TOKEN=os.environ['DROPBOX_OAUTH2_TOKEN']
+    DROPBOX_ROOT_PATH=os.environ['DROPBOX_ROOT_PATH']
 elif os.environ['FILE_STORAGE_TYPE'] == 'local':
     # Absolute filesystem path to the directory that will hold user-uploaded files.
     MEDIA_ROOT = os.environ['MEDIA_ROOT']

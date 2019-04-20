@@ -81,6 +81,10 @@ SFTP_STORAGE_HOST='media.example.com'
 SFTP_STORAGE_ROOT='/var/www/example.com/media/'
 SFTP_STORAGE_PARAMS='{"hostname": "media.example.com", "username": "user", "password: "pass"}'
 
+# If FILE_STORAGE_TYPE = 'Dropbox':
+DROPBOX_OAUTH2_TOKEN=''
+DROPBOX_ROOT_PATH='media/'
+
 # If FILE_STORAGE_TYPE = 'local':
 MEDIA_ROOT='/var/www/example.com/media/'
 MEDIA_URL='https://media.example.com/'
