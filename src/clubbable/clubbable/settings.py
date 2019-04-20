@@ -16,13 +16,13 @@ import dj_database_url
 from django.contrib.messages.constants import DEFAULT_TAGS, ERROR
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # ==============================
 # Settings specific to clubbable
 # ==============================
 
-CLUB_NAME = os.environ['CLUB_NAME']
+CLUB_NAME = os.environ['CLUB_NAME'].replace('_', ' ')
 
 # Title by which to refer to members. None if not applicable
 MEMBER_TITLE = os.environ.get('MEMBER_TITLE')
@@ -47,9 +47,15 @@ EMAIL_PORT = int(os.environ['EMAIL_PORT'])
 EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'].lower() in ('true', 'yes')
 
 # Mail settings for outgoing mail
-FROM_ADDRESS = os.environ['FROM_ADDRESS']
-REPLY_TO_ADDRESS = os.environ.get('REPLY_TO_ADDRESS') or FROM_ADDRESS
-BOUNCE_ADDRESS = os.environ.get('BOUNCE_ADDRESS') or REPLY_TO_ADDRESS
+FROM_ADDRESS = os.environ['FROM_ADDRESS'].replace('_', ' ')
+REPLY_TO_ADDRESS = (
+    os.environ.get('REPLY_TO_ADDRESS', '').replace('_', ' ')
+    or FROM_ADDRESS
+)
+BOUNCE_ADDRESS = (
+    os.environ.get('BOUNCE_ADDRESS', '').replace('_', ' ')
+    or REPLY_TO_ADDRESS
+)
 
 ADMINS = [tuple(pair) for pair in json.loads(os.environ['ADMINS'])]
 EMAIL_SUBJECT_PREFIX = os.environ['EMAIL_SUBJECT_PREFIX'] + ' '
