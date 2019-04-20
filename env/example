@@ -106,8 +106,8 @@ CELERY_BROKER_URL='amqp://guest:guest@rabbit:5672//'
 
 
 # SSL certificate primary server name
-export PRIMARY_DOMAIN=example.com
+PRIMARY_DOMAIN=example.com
 # SSL certificate server names
-export SERVER_NAMES="example.com www.example.com other.example.net"
+SERVER_NAMES="example.com www.example.com other.example.net"
 # Email address used to notify of cert-related issues
-export CERT_ADMIN=admin@example.com
+CERT_ADMIN=admin@example.com
