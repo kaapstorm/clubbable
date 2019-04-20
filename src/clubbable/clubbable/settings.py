@@ -168,9 +168,9 @@ elif os.environ['FILE_STORAGE_TYPE'] == 'Dropbox':
     DROPBOX_OAUTH2_TOKEN=os.environ['DROPBOX_OAUTH2_TOKEN']
     DROPBOX_ROOT_PATH=os.environ['DROPBOX_ROOT_PATH']
 elif os.environ['FILE_STORAGE_TYPE'] == 'local':
-    # Absolute filesystem path to the directory that will hold user-uploaded files.
+    # Absolute path to the directory that will hold user-uploaded files:
     MEDIA_ROOT = os.environ['MEDIA_ROOT']
-    # URL that handles the media served from MEDIA_ROOT
+    # URL that handles the media served from MEDIA_ROOT:
     MEDIA_URL = os.environ['MEDIA_URL']
 
 CACHES = {
@@ -210,6 +210,8 @@ STATIC_URL = os.environ.get('STATIC_URL')
 REDIS_URL = os.environ.get('REDIS_URL')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or REDIS_URL
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
+CELERY_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower()
+                       in ('true', 'yes'))
 
 if os.environ['DEPLOY_ENV'] == 'heroku':
     import django_heroku
