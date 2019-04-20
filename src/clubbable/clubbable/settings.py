@@ -51,7 +51,7 @@ FROM_ADDRESS = os.environ['FROM_ADDRESS']
 REPLY_TO_ADDRESS = os.environ.get('REPLY_TO_ADDRESS')  # Optional
 BOUNCE_ADDRESS = os.environ.get('BOUNCE_ADDRESS')  # Optional
 
-ADMINS = json.loads(os.environ['ADMINS'])
+ADMINS = [tuple(pair) for pair in json.loads(os.environ['ADMINS'])]
 EMAIL_SUBJECT_PREFIX = os.environ['EMAIL_SUBJECT_PREFIX']
 SERVER_EMAIL = os.environ['SERVER_EMAIL']
 

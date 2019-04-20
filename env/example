@@ -46,8 +46,9 @@ REPLY_TO_ADDRESS='The Club Secretary <secretary@example.com>'
 # Omit to use FROM_ADDRESS:
 BOUNCE_ADDRESS='<bounce@example.com>'
 
-# JSON-formatted list of people who get code error notifications:
-ADMINS='[("Admin", "admin@example.com")]'
+# JSON-formatted list of name-address pairs of people who should get error
+# notifications:
+ADMINS='[["Admin", "admin@example.com"]]'
 # Note trailing space:
 EMAIL_SUBJECT_PREFIX='[clubbable] '
 SERVER_EMAIL='clubbable@example.com'
