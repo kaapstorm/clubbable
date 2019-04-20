@@ -1,1 +1,1 @@
-web: gunicorn clubbable.wsgi:application
+web: gunicorn --chdir src/clubbable clubbable.wsgi:application
