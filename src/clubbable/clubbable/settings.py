@@ -201,5 +201,10 @@ DEFAULT_TAGS[ERROR] = 'warning'
 STATIC_ROOT = os.environ.get('STATIC_ROOT')
 STATIC_URL = os.environ.get('STATIC_URL')
 
-CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND']
-CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+REDIS_URL = os.environ.get('REDIS_URL')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or REDIS_URL
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
+
+if os.environ['DEPLOY_ENV'] == 'heroku':
+    import django_heroku
+    django_heroku.settings(locals(), allowed_hosts=False, databases=False)
