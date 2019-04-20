@@ -1,7 +1,7 @@
 import os
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clubbable.settings.example')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clubbable.settings')
 
 app = Celery('clubbable')
 
