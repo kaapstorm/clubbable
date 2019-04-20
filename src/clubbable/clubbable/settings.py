@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import json
 import os
+
+import dj_database_url
 from django.contrib.messages.constants import DEFAULT_TAGS, ERROR
 
 
@@ -19,38 +22,38 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # Settings specific to clubbable
 # ==============================
 
-CLUB_NAME = "The Pirate's Cove"
+CLUB_NAME = os.environ['CLUB_NAME']
 
 # Title by which to refer to members. None if not applicable
-MEMBER_TITLE = 'Captain'
+MEMBER_TITLE = os.environ.get('MEMBER_TITLE')
 
 # Support importing from legacy database
-IMPORT_LEGACY = False
+IMPORT_LEGACY = os.environ['IMPORT_LEGACY'].lower() in ('true', 'yes')
 
 # Filename of club's Access database, or `None` to disable
-MDB_FILENAME = 'club.mdb'
+MDB_FILENAME = os.environ.get('MDB_FILENAME')
 
 # Details for fetching files from Dropbox
-DROPBOX_APP_KEY = 'app_key'
-DROPBOX_APP_SECRET = 'app_secret'
+DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
+DROPBOX_APP_SECRET = os.environ['DROPBOX_APP_SECRET']
 
 # Mailgun settings
-MAILGUN_DOMAIN = 'mg.example.com'
-MAILGUN_API_KEY = 'key-123456'
-EMAIL_HOST_USER = 'postmaster@mg.example.com'
-EMAIL_HOST_PASSWORD = 'Passw0rd!'
-EMAIL_HOST = 'smtp.mailgun.org'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
+MAILGUN_API_KEY = os.environ['MAILGUN_API_KEY']
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_PORT = int(os.environ['EMAIL_PORT'])
+EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'].lower() in ('true', 'yes')
 
 # Mail settings for outgoing mail
-FROM_ADDRESS = "The Pirate's Cove <webmaster@example.com>"
-REPLY_TO_ADDRESS = 'The Club Secretary <secretary@example.com>'  # Optional
-BOUNCE_ADDRESS = '<bounce@example.com>'  # Optional
+FROM_ADDRESS = os.environ['FROM_ADDRESS']
+REPLY_TO_ADDRESS = os.environ.get('REPLY_TO_ADDRESS')  # Optional
+BOUNCE_ADDRESS = os.environ.get('BOUNCE_ADDRESS')  # Optional
 
-ADMINS = [('Admin', 'admin@example.com')]
-EMAIL_SUBJECT_PREFIX = '[clubbable] '
-SERVER_EMAIL = 'clubbable@example.com'
+ADMINS = json.loads(os.environ['ADMINS'])
+EMAIL_SUBJECT_PREFIX = os.environ['EMAIL_SUBJECT_PREFIX']
+SERVER_EMAIL = os.environ['SERVER_EMAIL']
 
 # ===============
 # Django settings
@@ -60,12 +63,12 @@ SERVER_EMAIL = 'clubbable@example.com'
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change_me'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['DEBUG'].lower() in ('true', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS'])
 
 
 # Application definition
@@ -136,23 +139,12 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'clubbable', 'db', 'db.sqlite3'),
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 if IMPORT_LEGACY:
-    DATABASES['legacy'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'club_db',
-        'USER': 'club_user',
-        'PASSWORD': 'club_secret',
-        'HOST': '',
-        'PORT': '',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
+    DATABASES['legacy'] = dj_database_url.config(
+        env='LEGACY_DB_URL', conn_max_age=600, ssl_require=True,
+    )
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
 CACHES = {
@@ -168,9 +160,9 @@ CACHES = {
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en-US')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
 
 USE_I18N = True
 
@@ -185,15 +177,14 @@ LOGIN_REDIRECT_URL = '/'
 DEFAULT_TAGS[ERROR] = 'warning'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
-MEDIA_ROOT = '/var/www/example.com/media/'
-
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '')
 # URL that handles the media served from MEDIA_ROOT
-MEDIA_URL = 'https://media.example.com/'
+MEDIA_URL = os.environ.get('MEDIA_URL', '')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'clubbable', 'static')
-STATIC_URL = 'https://static.example.com/'
+STATIC_ROOT = os.environ.get('STATIC_ROOT')
+STATIC_URL = os.environ.get('STATIC_URL')
 
-CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbit:5672//'
+CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND']
+CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']

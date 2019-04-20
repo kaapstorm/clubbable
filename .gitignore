@@ -1,9 +1,6 @@
 *.py[cod]
 env/*
 !env/example
-src/clubbable/clubbable/settings/*
-!src/clubbable/clubbable/settings/__init__.py
-!src/clubbable/clubbable/settings/example.py
 src/clubbable/clubbable/db
 src/clubbable/clubbable/static
 src/clubbable/clubbable/media
