@@ -71,9 +71,9 @@ LEGACY_DB_URL='mysql://USER:PASSWORD@HOST:PORT/NAME'
 FILE_STORAGE_TYPE='SFTP'
 
 # If FILE_STORAGE_TYPE = 'S3':
-AWS_ACCESS_KEY_ID='ABC123'
-AWS_SECRET_ACCESS_KEY='abc123+456def'
-AWS_STORAGE_BUCKET_NAME='example-bucket'
+#AWS_ACCESS_KEY_ID='ABC123'
+#AWS_SECRET_ACCESS_KEY='abc123+456def'
+#AWS_STORAGE_BUCKET_NAME='example-bucket'
 
 # If FILE_STORAGE_TYPE = 'SFTP':
 SFTP_STORAGE_HOST='media.example.com'
@@ -82,20 +82,17 @@ SFTP_STORAGE_ROOT='/var/www/example.com/media/'
 SFTP_STORAGE_PARAMS='{"hostname": "media.example.com", "username": "user", "password: "pass"}'
 
 # If FILE_STORAGE_TYPE = 'Dropbox':
-DROPBOX_OAUTH2_TOKEN=''
-DROPBOX_ROOT_PATH='media/'
+#DROPBOX_OAUTH2_TOKEN=''
+#DROPBOX_ROOT_PATH='media/'
 
 # If FILE_STORAGE_TYPE = 'local':
-MEDIA_ROOT='/var/www/example.com/media/'
-MEDIA_URL='https://media.example.com/'
+# Absolute filesystem path to the directory that will hold user-uploaded files.
+#MEDIA_ROOT='/var/www/example.com/media/'
+# URL that handles the media served from MEDIA_ROOT
+#MEDIA_URL='https://media.example.com/'
 
 LANGUAGE_CODE='en-US'
 TIME_ZONE='UTC'
-
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-MEDIA_ROOT='/var/www/example.com/media/'
-# URL that handles the media served from MEDIA_ROOT
-MEDIA_URL='https://media.example.com/'
 
 # Absolute path to the directory where collectstatic will collect static files.
 STATIC_ROOT='/var/www/example.com/static/'
