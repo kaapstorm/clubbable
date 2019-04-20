@@ -66,6 +66,25 @@ DATABASE_URL='sqlite:///clubbable/db/db.sqlite3'
 # Omit if IMPORT_LEGACY=False:
 LEGACY_DB_URL='mysql://USER:PASSWORD@HOST:PORT/NAME'
 
+# How to store user-uploaded files. Valid values are "S3", "SFTP", "Dropbox",
+# "local". Values are case-sensitive.
+FILE_STORAGE_TYPE='SFTP'
+
+# If FILE_STORAGE_TYPE = 'S3':
+AWS_ACCESS_KEY_ID='ABC123'
+AWS_SECRET_ACCESS_KEY='abc123+456def'
+AWS_STORAGE_BUCKET_NAME='example-bucket'
+
+# If FILE_STORAGE_TYPE = 'SFTP':
+SFTP_STORAGE_HOST='media.example.com'
+# Must include trailing slash:
+SFTP_STORAGE_ROOT='/var/www/example.com/media/'
+SFTP_STORAGE_PARAMS='{"hostname": "media.example.com", "username": "user", "password: "pass"}'
+
+# If FILE_STORAGE_TYPE = 'local':
+MEDIA_ROOT='/var/www/example.com/media/'
+MEDIA_URL='https://media.example.com/'
+
 LANGUAGE_CODE='en-US'
 TIME_ZONE='UTC'
 

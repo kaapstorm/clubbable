@@ -147,10 +147,21 @@ if IMPORT_LEGACY:
     )
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
-DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+if os.environ['FILE_STORAGE_TYPE'] == 'S3':
+    DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+elif os.environ['FILE_STORAGE_TYPE'] == 'SFTP':
+    DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+    SFTP_STORAGE_HOST=os.environ['SFTP_STORAGE_HOST']
+    SFTP_STORAGE_ROOT=os.environ['SFTP_STORAGE_ROOT']
+    SFTP_STORAGE_PARAMS=json.loads(os.environ['SFTP_STORAGE_PARAMS'])
+elif os.environ['FILE_STORAGE_TYPE'] == 'local':
+    # Absolute filesystem path to the directory that will hold user-uploaded files.
+    MEDIA_ROOT = os.environ['MEDIA_ROOT']
+    # URL that handles the media served from MEDIA_ROOT
+    MEDIA_URL = os.environ['MEDIA_URL']
 
 CACHES = {
     'locmem': {
@@ -180,11 +191,6 @@ LOGIN_REDIRECT_URL = '/'
 # Change the tag for error messages to "warning" so that it works nicely
 # with Bootstrap classes
 DEFAULT_TAGS[ERROR] = 'warning'
-
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '')
-# URL that handles the media served from MEDIA_ROOT
-MEDIA_URL = os.environ.get('MEDIA_URL', '')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
