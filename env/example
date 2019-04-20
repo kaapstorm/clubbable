@@ -14,6 +14,8 @@
 #
 # Thanks to https://stackoverflow.com/a/20909045/245672
 
+# The name of this deployment environment. e.g. "production"
+DEPLOY_ENV=example
 
 CLUB_NAME="The Pirate's Cove"
 
@@ -78,7 +80,10 @@ MEDIA_URL='https://media.example.com/'
 STATIC_ROOT='/var/www/example.com/static/'
 STATIC_URL='https://static.example.com/'
 
+REDIS_URL='redis://127.0.0.1:6379/0'
+# Optional. If not specified, falls back to REDIS_URL:
 CELERY_RESULT_BACKEND='django-cache'
+# Optional. If not specified, falls back to REDIS_URL:
 CELERY_BROKER_URL='amqp://guest:guest@rabbit:5672//'
 
 
