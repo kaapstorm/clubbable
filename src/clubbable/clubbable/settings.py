@@ -147,6 +147,11 @@ if IMPORT_LEGACY:
     )
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
+DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+
 CACHES = {
     'locmem': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
