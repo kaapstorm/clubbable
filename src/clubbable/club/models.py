@@ -11,11 +11,29 @@ clubs, or simply ignored if the club does not use a Microsoft Access database.
 
 """
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.mail import mail_admins
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
+
+
+class EmailUserManager(UserManager):
+
+    def _create_user(self, username, email, password, **extra_fields):
+        if username != email:
+            raise ValueError('The username must be the email address')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email, password=None, **extra_fields):
+        return super().create_user(email, email, password, **extra_fields)
+
+    def create_superuser(self, email, password, **extra_fields):
+        return super().create_superuser(email, email, password, **extra_fields)
 
 
 class User(AbstractUser):
@@ -30,6 +48,8 @@ class User(AbstractUser):
             'unique': _("A user with that email address already exists."),
         },
     )
+
+    objects = EmailUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # USERNAME_FIELD will always be prompted for
