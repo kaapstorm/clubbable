@@ -145,11 +145,11 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(conn_max_age=600)
 }
 if IMPORT_LEGACY:
     DATABASES['legacy'] = dj_database_url.config(
-        env='LEGACY_DB_URL', conn_max_age=600, ssl_require=True,
+        env='LEGACY_DB_URL', conn_max_age=600,
     )
     DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
 
