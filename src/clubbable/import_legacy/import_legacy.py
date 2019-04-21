@@ -203,7 +203,7 @@ def import_documents(files_path):
         document.save()
 
 
-def import_legacy(incl_files=True, files_path=None):
+def import_legacy(incl_files=False, files_path=None):
     """
     Import from a legacy database
 
