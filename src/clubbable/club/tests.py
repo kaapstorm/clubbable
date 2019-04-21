@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import date
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from club.models import Member, Guest, Meeting, User
@@ -72,6 +73,19 @@ class TestMeeting(TestCase):
             name='Meeting'
         )
         self.assertEqual('%s' % meeting, 'Meeting (March 2014)')
+
+
+class TestUser(TestCase):
+
+    def test_create_superuser(self):
+        user_data = {'email': 'testy@example.com', 'password': 's3cr3t'}
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.create_superuser(**user_data)
+        except Exception as err:
+            assert False, str(err)
+        else:
+            user.delete()
 
 
 class DashboardViewTests(TestCase):
