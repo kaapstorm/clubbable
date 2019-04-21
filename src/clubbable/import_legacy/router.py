@@ -28,6 +28,6 @@ class LegacyDbRouter(object):
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         # Don't try to write migrations to the legacy database
-        if app_label == 'import_legacy':
+        if db == 'legacy' or app_label == 'import_legacy':
             return False
         return None
