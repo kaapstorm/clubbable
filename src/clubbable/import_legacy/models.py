@@ -12,6 +12,7 @@ class Office(models.Model):
 
     class Meta:
         db_table = 'owl_offices'
+        managed = False
         
 
 class Member(models.Model):
@@ -57,6 +58,7 @@ class Member(models.Model):
 
     class Meta:
         db_table = 'owl_members'
+        managed = False
 
 
 class Cartoon(models.Model):
@@ -79,7 +81,8 @@ class Cartoon(models.Model):
 
     class Meta:
         db_table = 'cartoons'
-    
+        managed = False
+
 
 class Photograph(models.Model):
     date = models.DateField()
@@ -101,7 +104,8 @@ class Photograph(models.Model):
 
     class Meta:
         db_table = 'photographs'
-    
+        managed = False
+
 
 class User(models.Model):
     username = models.CharField(max_length=32)
@@ -124,6 +128,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'users'
+        managed = False
 
 
 class Group(models.Model):
@@ -135,7 +140,8 @@ class Group(models.Model):
 
     class Meta:
         db_table = 'groups'
-        
+        managed = False
+
 
 class Notice(models.Model):
     date = models.DateField()
@@ -148,6 +154,7 @@ class Notice(models.Model):
 
     class Meta:
         db_table = 'notices'
+        managed = False
 
 
 class NoticeReadBy(models.Model):
@@ -157,6 +164,7 @@ class NoticeReadBy(models.Model):
     
     class Meta: 
         db_table = 'notices_readby'
+        managed = False
 
 
 class Document(models.Model):
@@ -172,6 +180,7 @@ class Document(models.Model):
 
     class Meta:
         db_table = 'documents'
+        managed = False
 
 
 # New site does not support legacy quicklinks
