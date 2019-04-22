@@ -7,12 +7,13 @@ import csv
 import inspect
 from datetime import datetime
 import re
-from subprocess import check_output
+
+import requests
+from django.conf import settings
 from django.core.mail import mail_admins
 from club.models import Member, Meeting, Guest
 
 
-MDB_EXPORT_CMD = '/usr/bin/mdb-export'
 MDB_DATE_RE = re.compile(r'^(\d{2})/(\d{2})/(\d{2}) 00:00:00$')
 ATTRIBUTES = {
     'Member': (
@@ -97,6 +98,16 @@ def none_to_blank(value):
     return '' if value == '(none)' else value
 
 
+def fetch_mdb_dump(filename, table):
+    response = requests.post(
+        settings.MDB_DUMP_URL,
+        auth=(settings.MDB_DUMP_USERNAME, settings.MDB_DUMP_PASSWORD),
+        data={'table_name': table},
+        files={'mdb_file': open(filename, 'rb')},
+    )
+    return response.text
+
+
 def import_table(filename, class_, table, id_, delete=True):
     """
     Imports a table from an Access database.
@@ -110,8 +121,8 @@ def import_table(filename, class_, table, id_, delete=True):
     attributes = ATTRIBUTES[class_.__name__]
     start = datetime.now()
 
-    output = check_output((MDB_EXPORT_CMD, filename, table))
-    rows = output.decode('utf-8').split('\n')
+    output = fetch_mdb_dump(filename, table)
+    rows = output.split('\n')
     reader = csv.DictReader(rows)
 
     upserted = 0

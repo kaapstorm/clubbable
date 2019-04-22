@@ -183,6 +183,11 @@ CACHES = {
     }
 }
 
+if MDB_FILENAME:
+    MDB_DUMP_URL = os.environ['MDB_DUMP_URL']
+    MDB_DUMP_USERNAME = os.environ['MDB_DUMP_USERNAME']
+    MDB_DUMP_PASSWORD = os.environ['MDB_DUMP_PASSWORD']
+
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
