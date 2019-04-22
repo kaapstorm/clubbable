@@ -213,8 +213,9 @@ STATIC_ROOT = os.environ.get('STATIC_ROOT')
 STATIC_URL = os.environ.get('STATIC_URL')
 
 REDIS_URL = os.environ.get('REDIS_URL')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or REDIS_URL
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower()
                        in ('true', 'yes'))
 
