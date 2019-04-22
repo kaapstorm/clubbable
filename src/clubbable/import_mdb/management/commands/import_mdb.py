@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from import_mdb.import_mdb import import_mdb
+from import_mdb.tasks import import_mdb
 
 
 class Command(BaseCommand):
@@ -9,4 +9,4 @@ class Command(BaseCommand):
         parser.add_argument('filename', help='a Microsoft Access MDB file')
 
     def handle(self, *args, **options):
-        import_mdb(options['filename'])
+        import_mdb.apply((options['filename'],))

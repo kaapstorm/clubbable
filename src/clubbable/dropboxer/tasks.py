@@ -12,7 +12,7 @@ from club.models import User
 from clubbable.utils import quickcache
 from docs.models import Folder, Document
 from galleries.models import Gallery, Image
-from import_mdb.import_mdb import import_mdb
+from import_mdb.tasks import import_mdb
 
 
 @contextmanager
@@ -201,7 +201,7 @@ def process_changes(username):
                         with closing(NamedTemporaryFile()) as tmp_file:
                             for chunk in response.iter_content(chunk_size=512):
                                 tmp_file.write(chunk)
-                            import_mdb(tmp_file.name)
+                            import_mdb.apply((tmp_file.name,))
                     mdbs.append(entry.path_lower)
                 elif is_new_document(entry):
                     import_document(dbx, entry)

@@ -5,8 +5,8 @@ The class definitions include a field name in comments after each field. This
 corresponds the the field in the Microsoft Access database that is imported to
 populate *clubbable*.
 
-The import is done by import_mdb/import_mdb.py. It is specific to the club for
-which *clubbable* was written, but should be easy to customise for other
+The import is done by import_mdb.tasks.import_mdb. It is specific to the club
+for which *clubbable* was written, but should be easy to customise for other
 clubs, or simply ignored if the club does not use a Microsoft Access database.
 
 """

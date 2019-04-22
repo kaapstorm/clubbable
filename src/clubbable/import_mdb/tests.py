@@ -2,9 +2,9 @@ import doctest
 
 from django.test import SimpleTestCase
 
-import import_mdb.import_mdb
 from club.models import Member, Guest, Meeting
-from import_mdb.import_mdb import ATTRIBUTES
+import import_mdb.tasks
+from import_mdb.tasks import ATTRIBUTES
 
 
 class TestModelAttributes(SimpleTestCase):
@@ -25,5 +25,5 @@ class TestModelAttributes(SimpleTestCase):
 class DocTests(SimpleTestCase):
 
     def test_doctests(self):
-        results = doctest.testmod(import_mdb.import_mdb)
+        results = doctest.testmod(import_mdb.tasks)
         self.assertEqual(results.failed, 0)
