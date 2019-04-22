@@ -94,6 +94,11 @@ SFTP_STORAGE_PARAMS={"hostname": "media.example.com", "username": "user", "passw
 # URL that handles the media served from MEDIA_ROOT
 #MEDIA_URL=https://media.example.com/
 
+# A microservice that dumps a table of an MDB file as CSV:
+MDB_DUMP_URL=http://mdbdump.example.com/
+MDB_DUMP_USERNAME=user123
+MDB_DUMP_PASSWORD=pass456
+
 LANGUAGE_CODE=en-US
 TIME_ZONE=UTC
 
