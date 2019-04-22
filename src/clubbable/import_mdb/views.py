@@ -19,8 +19,11 @@ def upload_mdb(request):
         form = UploadMdbForm(request.POST, request.FILES)
         if form.is_valid():
             filename = save_file_to_storage(request.FILES['access_db'])
-            (import_mdb.si(filename) | delete_storage_file.si(filename))()
-
+            import_mdb.apply_async(
+                (filename,),
+                link=delete_storage_file.si(filename),
+                link_error=delete_storage_file.si(filename),
+            )
             messages.info(request, 'Access database queued for importing.')
             return HttpResponseRedirect(reverse('dashboard'))
     else:
