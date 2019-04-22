@@ -3,12 +3,13 @@ from tempfile import NamedTemporaryFile
 
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.core.files.storage import DefaultStorage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
 from import_mdb.forms import UploadMdbForm
-from import_mdb.tasks import import_mdb, unlink
+from import_mdb.tasks import import_mdb, delete_storage_file
 from club.views import get_context_data
 
 
@@ -17,8 +18,8 @@ def upload_mdb(request):
     if request.method == 'POST':
         form = UploadMdbForm(request.POST, request.FILES)
         if form.is_valid():
-            tmp_filename = save_tmp_file(request.FILES['access_db'])
-            (import_mdb.si(tmp_filename) | unlink.si(tmp_filename))()
+            filename = save_file_to_storage(request.FILES['access_db'])
+            (import_mdb.si(filename) | delete_storage_file.si(filename))()
 
             messages.info(request, 'Access database queued for importing.')
             return HttpResponseRedirect(reverse('dashboard'))
@@ -29,14 +30,13 @@ def upload_mdb(request):
     return render(request, 'import_mdb/upload_mdb.html', context_data)
 
 
-def save_tmp_file(uploaded_file):
+def save_file_to_storage(uploaded_file):
     """
-    Saves the contents of an uploaded file into a temporary file and
-    returns its filename.
-
-    The temporary file needs to be deleted when it is no longer needed.
+    Saves an uploaded file to default storage and returns its filename.
     """
-    with closing(NamedTemporaryFile(delete=False)) as tmp_file:
+    storage = DefaultStorage()
+    filename = storage.get_valid_name(uploaded_file.name)
+    with storage.open(filename, 'wb') as f:
         for chunk in uploaded_file.chunks():
-            tmp_file.write(chunk)
-    return tmp_file.name
+            f.write(chunk)
+    return filename

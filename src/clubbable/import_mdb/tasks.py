@@ -12,6 +12,7 @@ from datetime import datetime
 import requests
 from celery import shared_task
 from django.conf import settings
+from django.core.files.storage import DefaultStorage
 from django.core.mail import mail_admins
 
 from club.models import Member, Guest, Meeting
@@ -102,8 +103,9 @@ def none_to_blank(value):
 
 
 @shared_task
-def unlink(filename):
-    os.unlink(filename)
+def delete_storage_file(filename):
+    storage = DefaultStorage()
+    storage.delete(filename)
 
 
 @shared_task
@@ -191,7 +193,8 @@ def import_table(filename, class_, table, id_, delete=True):
 
 
 def fetch_mdb_dump(filename, table):
-    with open(filename, 'rb') as mdb_file:
+    storage = DefaultStorage()
+    with storage.open(filename, 'rb') as mdb_file:
         response = requests.post(
             settings.MDB_DUMP_URL,
             auth=(settings.MDB_DUMP_USERNAME, settings.MDB_DUMP_PASSWORD),
