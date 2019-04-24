@@ -5,7 +5,6 @@ Check table names, and columns to customise for your database.
 """
 import csv
 import inspect
-import os
 import re
 from datetime import datetime
 
@@ -201,4 +200,10 @@ def fetch_mdb_dump(filename, table):
             data={'table_name': table},
             files={'mdb_file': mdb_file},
         )
+    if not 200 <= response.status_code < 300:
+        mail_admins(
+            f'Unable to export table "{table}" from database',
+            f'MDB Dump returned error: "{response.text}"'
+        )
+        raise ValueError('Unable to export table from database')
     return response.text
