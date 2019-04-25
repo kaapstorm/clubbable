@@ -19,6 +19,8 @@
       <td>{{ member }}</td>
       <td>{{ member.year }}</td>
     </tr>
+    {% empty %}
+    <tr><td>No members</td></tr>
     {% endfor %}
   </table>
 
