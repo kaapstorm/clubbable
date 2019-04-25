@@ -3,44 +3,45 @@ clubbable
 
 A web application for managing newsletters and image galleries for a club.
 
-Requirements
-------------
 
-Python library requirements are listed in requirements.txt.
+Deployment
+----------
 
-Requirements include Pillow, which in turn will need Python headers installed
-(normally available in the python-dev or python-devel package in your operating
-system's software repository) and libraries for image formats you want to
-support; at least JPEG, maybe PNG. e.g. ::
+Heroku is the standard deployment environment, but you can find git branches
+for building a Docker image, and for deploying to AWS Elastic Beanstalk in a
+multi-container Docker environment.
+
+
+Running locally
+^^^^^^^^^^^^^^^
+
+For Debian derivatives like Ubuntu, install system packages::
 
     $ sudo apt-get install python-dev libjpeg-dev libpng12-dev
 
+Install Python requirements::
 
-Importing from Microsoft Access
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    $ sudo pip install -r requirements.txt
 
-If you want to import data from a Microsoft Access database, you will need
-mdbtools_. It is available from the mdbtools_ homepage. You might also be able
-to install it from your operating system's software repository. e.g. ::
+Create local configuration file::
 
-    $ sudo apt-get install mdbtools
+    $ cp env/example env/local  # (where "local" is an arbitrary name)
 
+Customise your configuration::
 
-Importing from a legacy MySQL database
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    $ $EDITOR env/local
 
-*clubbable* was build to replace a legacy web application, and data needed to
-be imported from the legacy database. That was done with the
-Python-3-compatible mysqlclient library. It needs the libmysqlclient
-development package. On Debian-like operating systems, you can use ::
+Set environment variables::
 
-    $ sudo apt-get install libmysqlclient-dev
+    $ egrep -v '^#|^$' env/local | while read LINE ; do export $LINE ; done
+
+Start the development web server::
+
+    $ cd src/clubbable
+    $ ./manage.py runserver
 
 
 Documentation
 -------------
 
 Further documentation can be found in the "doc" directory.
-
-
-.. _mdbtools: http://mdbtools.sourceforge.net/
