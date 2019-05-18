@@ -16,7 +16,9 @@
   <table class="table table-hover">
     {% for member in members %}
     <tr>
-      <td>{{ member }}</td>
+      <td>
+        <a href="{% url 'member_profile' member.id %}">{{ member }}</a>
+      </td>
       <td>{{ member.year }}</td>
     </tr>
     {% empty %}

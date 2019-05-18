@@ -6,7 +6,12 @@ from django.contrib.auth import (
 )
 from django.urls import path, include, re_path
 from django.views.static import serve
-from club.views import LandingView, MemberList, dashboard
+
+from club.views import (
+    LandingView,
+    dashboard,
+)
+from club import urls as club_urls
 from docs import urls as docs_urls
 from dropboxer import urls as dropbox_urls
 from galleries import urls as galleries_urls
@@ -16,7 +21,7 @@ admin.autodiscover()
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
-    path('member/', MemberList.as_view(), name='member_list'),
+    path('member/', include(club_urls)),
     path('doc/', include(docs_urls)),
     path('img/', include(galleries_urls)),
     path('dropbox/', include(dropbox_urls)),

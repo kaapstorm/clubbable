@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 from django.views.generic.base import ContextMixin
 from markdown import markdown
 
@@ -50,6 +50,11 @@ class MemberList(LoginRequiredMixin, ListView, ClubbableContextMixin):
     model = Member
     context_object_name = 'members'
     paginate_by = 100
+
+
+class MemberProfile(LoginRequiredMixin, DetailView, ClubbableContextMixin):
+    model = Member
+    context_object_name = 'member'
 
 
 def _get_tiles(request):

@@ -64,7 +64,8 @@ class Image(models.Model):
     def name(self):
         if self.description:
             return self.description
-        people = ', '.join((str(p) for p in chain(self.members, self.guests)))
+        people = chain(self.members.all(), self.guests.all())
+        people = ', '.join((str(p) for p in people))
         if self.meeting:
             return f'{self.meeting}: {people}'
         return people
