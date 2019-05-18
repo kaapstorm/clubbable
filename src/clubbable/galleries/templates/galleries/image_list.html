@@ -16,23 +16,7 @@
   <div class="container-fluid">
     <div class="row">
       {% for image in images %}
-      <div class="col-3 p-2">
-        <div class="card border text-center align-middle"
-             style="height: 200px;">
-          <a href="{% url 'image_show' image.gallery.id image.id %}">
-            <img src="{% url 'download_thumbnail' image.gallery.id image.id image.filename %}"
-                 alt="{{ image }}"
-                 class="card-img-top border border-dark rounded" />
-          </a>
-          <div class="card-body" style="overflow: hidden;">
-            <p class="card-title">
-              <a href="{% url 'image_show' image.gallery.id image.id %}">
-                {{ image }}
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
+      {% include "galleries/image_card.html" %}
       {% empty %}
       No images
       {% endfor %}
