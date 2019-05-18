@@ -28,8 +28,9 @@
           <select id="id_to"
                   name="to"
                   class="form-control">
-            <option>Myself</option>
-            <option>Everyone</option>
+            {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.name }}</option>
+            {% endfor %}
           </select>
         </div>
         <div class="form-group">
@@ -56,7 +57,7 @@ Kind regards,
             *Supports styling with <a href="https://daringfireball.net/projects/markdown/" target="_blank">Markdown</a>.
           </small>
         </div>
-        <button type="submit" class="btn btn-default">Send</button>
+        <button type="submit" class="btn btn-primary">Send</button>
       </form>
     </div>
   </div>

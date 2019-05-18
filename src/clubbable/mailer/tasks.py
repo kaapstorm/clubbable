@@ -11,6 +11,7 @@ from inspect import cleandoc
 import magic
 from celery import shared_task
 import requests
+from django.contrib.auth.models import Group
 from markdown import markdown
 from club.models import User
 from django.conf import settings
@@ -28,17 +29,23 @@ class MailerError(Exception):
 def send_doc(to, subject, message, doc_id):
 
     def get_recipients_vars(to_):
-        if to_ == 'Everyone':
-            recipients = []
-            variables = {}
-            for user in User.objects.all():
-                if user.receives_emails():
-                    recipients.append(user.email)
-                    variables[user.email] = {'full_name': user.get_full_name()}
-            return recipients, variables
+        if to_.isdigit():
+            group = Group.objects.get(pk=to_)
+            users = group.user_set.all()
+        elif to_ == 'everyone':
+            users = User.objects.all()
+        elif '@' in to_:
+            # "myself" was passed as request.user.email
+            users = [User.objects.get(email=to_)]
         else:
-            user = User.objects.get(email=to_)
-            return to_, {to_: {'full_name': user.get_full_name()}}
+            raise MailerError(f'Unrecognised recipient "{to_}"')
+        recipients = []
+        variables = {}
+        for user in users:
+            if user.receives_emails():
+                recipients.append(user.email)
+                variables[user.email] = {'full_name': user.get_full_name()}
+        return recipients, variables
 
     text = cleandoc(message)
     html = markdown(text)
