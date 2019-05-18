@@ -9,7 +9,7 @@ from club.models import Meeting, Member, Guest
 
 
 def _get_upload_path(instance, filename):
-    upload_to = 'img/{gallery}/%Y/%m/'.format(gallery=instance.gallery)
+    upload_to = f'img/{instance.gallery}/%Y/%m/'
     dirname = datetime.datetime.now().strftime(upload_to)
     return posixpath.join(dirname, filename)
 

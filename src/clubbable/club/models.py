@@ -212,8 +212,8 @@ class Member(models.Model):
         user.save()
         mail_admins(
             'User address changed',
-            'The e-mail address of {} has changed from "{}" to "{}".'.format(
-                member, old_address, member.email)
+            f'The e-mail address of {member} has changed from '
+            f'"{old_address}" to "{member.email}".'
         )
 
 
@@ -277,7 +277,8 @@ class Meeting(models.Model):
         # Note that the year and month fields are ignored. Just the date field
         # is used. This is because we import the year and month fields, if they
         # are available, for the sake of completeness
-        return '{} ({})'.format(self.name, self.date.strftime('%B %Y'))
+        month = self.date.strftime('%B %Y')
+        return f'{self.name} ({month})'
 
 
 class Profile(models.Model):
@@ -292,4 +293,4 @@ class Profile(models.Model):
     member = models.OneToOneField(Member, models.CASCADE)
 
     def __str__(self):
-        return '%s (%s)' % (self.user, self.member)
+        return f'{self.user} ({self.member})'

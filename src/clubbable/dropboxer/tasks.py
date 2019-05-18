@@ -155,17 +155,15 @@ def notify_imported(dropbox_user, mdbs, docs, imgs):
 
 
 def notify_multiple_mdbs(mdbs):
+    mdbs = '\n'.join(('  - %s' % mdb for mdb in mdbs))
     mail_admins(
         'Multiple Access databases in Dropbox',
-        inspect.cleandoc("""
+        inspect.cleandoc(f"""
         Found multiple Access databases:
         {mdbs}
 
-        Please ensure that only one file is named "{name}",
-        or change MDB_FILENAME in settings.""".format(
-            mdbs='\n'.join(('  - %s' % mdb for mdb in mdbs)),
-            name=settings.MDB_FILENAME
-        ))
+        Please ensure that only one file is named "{settings.MDB_FILENAME}",
+        or change MDB_FILENAME in settings.""")
     )
 
 

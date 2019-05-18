@@ -112,7 +112,7 @@ def import_mdb(filename):
     member_ups, member_dels = import_members(filename)
     guest_ups, guest_dels = import_guests(filename)
     meeting_ups, meeting_dels = import_meetings(filename)
-    mail_admins('Imported Access database', inspect.cleandoc("""
+    mail_admins('Imported Access database', inspect.cleandoc(f"""
         Members:
           - Added/updated: {member_ups}
           - Deleted: {member_dels}
@@ -124,14 +124,7 @@ def import_mdb(filename):
         Meetings:
           - Added/updated: {meeting_ups}
           - Deleted: {meeting_dels}
-        """.format(
-            member_ups=member_ups,
-            member_dels=member_dels,
-            guest_ups=guest_ups,
-            guest_dels=guest_dels,
-            meeting_ups=meeting_ups,
-            meeting_dels=meeting_dels,
-        )
+        """
     ))
 
 

@@ -124,10 +124,7 @@ def import_cartoons(files_path):
         if member:
             cartoon.members.add(member)
         # Give the file a nice filename
-        filepath = '{path}/cartoons/full/{filename}'.format(
-            path=files_path,
-            filename=original.filename
-        )
+        filepath = f'{files_path}/cartoons/full/{original.filename}'
         image_file = ImageFile(open(filepath, 'rb'))
         cartoon.original.save(alt_slugify(cartoon.description)+'.jpg',
                               image_file)
@@ -148,10 +145,7 @@ def import_photographs(files_path):
         for member in original.members.all():
             member = Member.objects.get(pk=member.id)
             photo.members.add(member)
-        filepath = '{path}/photographs/full/{filename}'.format(
-            path=files_path,
-            filename=original.filename
-        )
+        filepath = f'{files_path}/photographs/full/{original.filename}'
         image_file = ImageFile(open(filepath, 'rb'))
         photo.original.save(alt_slugify(photo.description)+'.jpg', image_file)
         photo.save()
@@ -161,10 +155,7 @@ def import_notices(files_path):
     mime = magic.Magic(mime=True)
     folder = Folder.objects.get(name='Notices')
     for original in OriginalNotice.objects.all():
-        filepath = '{path}/notices/{filename}'.format(
-            path=files_path,
-            filename=original.filename
-        )
+        filepath = f'{files_path}/notices/{original.filename}'
         file_ = File(open(filepath, 'rb'))
         meeting = Meeting.objects.get_or_none(date=original.date)
         notice = Document.objects.create(
@@ -181,10 +172,7 @@ def import_documents(files_path):
     mime = magic.Magic(mime=True)
     folder = Folder.objects.get(name='Documents')
     for original in OriginalDocument.objects.all():
-        filepath = '{path}/documents/{filename}'.format(
-            path=files_path,
-            filename=original.filename
-        )
+        filepath = f'{files_path}/documents/{original.filename}'
         file_ = File(open(filepath, 'rb'))
         if original.description:
             description = '%s (%s)' % (original.name, original.description)

@@ -5,7 +5,7 @@ from django.db import models
 
 
 def _get_upload_path(instance, filename):
-    upload_to = 'doc/{folder}/%Y/%m/'.format(folder=instance.folder)
+    upload_to = f'doc/{instance.folder}/%Y/%m/'
     dirname = datetime.datetime.now().strftime(upload_to)
     return posixpath.join(dirname, filename)
 
