@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,10 +5,10 @@ from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import ListView
-import magic
+
+from club.views import get_context_data, ClubbableContextMixin
 from docs.models import Document, Folder
 from mailer.tasks import send_doc
-from club.views import get_context_data, ClubbableContextMixin
 
 
 class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
