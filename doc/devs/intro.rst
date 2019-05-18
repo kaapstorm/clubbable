@@ -26,6 +26,19 @@ Heroku CLI commands to initialise the database and create a superuser are::
     $ heroku run -a <app> python src/clubbable/manage.py createsuperuser
 
 
+Importing from a Microsoft Access database
+------------------------------------------
+
+*clubbable* is written for a club that uses a Microsoft Access database as a
+primary data source. *clubbable* updates its own database by importing from the
+Access database. It imports using a `microservice called dump_mdb`_ to dump
+tables from an Access MDB file as CSV.
+
+You can use *clubbable* without following this workflow. (In fact, I would
+recommend avoiding it.)
+
+
 .. _GNU Affero GPL: http://www.gnu.org/licenses/agpl-3.0.html
 .. _fork the project on GitHub: https://github.com/kaapstorm/clubbable
 .. _instructions for deployment: https://devcenter.heroku.com/articles/git
+.. _microservice called dump_mdb: https://github.com/kaapstorm/dump_mdb
