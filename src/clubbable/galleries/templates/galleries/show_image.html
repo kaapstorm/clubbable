@@ -20,7 +20,7 @@
   <div class="{% if image.original.width > image.original.height %}col-12{% else %}col-8{% endif %}">
     <div class="card p-2">
       <h3 class="card-title">{{ image }}</h3>
-      <img src="{{ image.display.url }}"
+      <img src="{% url 'download_display' image.gallery.id image.id image.filename %}"
            class="card-img-top"/>
 
       <ul class="list-group list-group-flush">
@@ -60,7 +60,7 @@
       </ul>
 
       <div class="card-body">
-        <a href="{% url 'image_download' image.gallery.id image.id image.filename %}"
+        <a href="{% url 'download_original' image.gallery.id image.id image.filename %}"
            class="card-link">
           <i class="fas fa-download"></i> Download
         </a>

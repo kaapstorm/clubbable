@@ -20,7 +20,7 @@
         <div class="card border text-center align-middle"
              style="height: 200px;">
           <a href="{% url 'image_show' image.gallery.id image.id %}">
-            <img src="{{ image.thumbnail.url }}"
+            <img src="{% url 'download_thumbnail' image.gallery.id image.id image.filename %}"
                  alt="{{ image }}"
                  class="card-img-top border border-dark rounded" />
           </a>

@@ -33,7 +33,7 @@ def show(request, gallery_id, pk):
 
 
 @login_required
-def download(request, gallery_id, pk, filename):
+def download_original(request, gallery_id, pk, filename):
     """
     Return image as an attachment.
 
@@ -41,3 +41,15 @@ def download(request, gallery_id, pk, filename):
     """
     image = get_object_or_404(Image, gallery__id=gallery_id, pk=pk)
     return FileResponse(image.original, as_attachment=True)
+
+
+@login_required
+def download_thumbnail(request, gallery_id, pk, filename):
+    image = get_object_or_404(Image, gallery__id=gallery_id, pk=pk)
+    return FileResponse(image.thumbnail, as_attachment=True)
+
+
+@login_required
+def download_display(request, gallery_id, pk, filename):
+    image = get_object_or_404(Image, gallery__id=gallery_id, pk=pk)
+    return FileResponse(image.display, as_attachment=True)
