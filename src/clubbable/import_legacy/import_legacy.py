@@ -90,7 +90,7 @@ def import_users():
             email=original.email,
             first_name=first_name,
             last_name=last_name,
-            password='md5$$%s' % (original.password,),
+            password=f'md5$${original.password}',
             is_staff=False,
             is_active=original.is_login_enabled,
             is_superuser=False,
@@ -160,7 +160,7 @@ def import_notices(files_path):
         meeting = Meeting.objects.get_or_none(date=original.date)
         notice = Document.objects.create(
             folder=folder,
-            description='%s (%s)' % (original.description, str(original.date)),
+            description=f'{original.description} ({original.date})',
             meeting=meeting,
             content_type=mime.from_file(filepath),
         )
@@ -175,7 +175,7 @@ def import_documents(files_path):
         filepath = f'{files_path}/documents/{original.filename}'
         file_ = File(open(filepath, 'rb'))
         if original.description:
-            description = '%s (%s)' % (original.name, original.description)
+            description = f'{original.name} ({original.description})'
         else:
             description = original.name
         document = Document.objects.create(

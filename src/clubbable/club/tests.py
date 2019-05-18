@@ -37,11 +37,11 @@ class TestMember(TestCase):
 
     def test_unicode_with_member_title(self):
         settings.MEMBER_TITLE = 'Rotarian'
-        self.assertEqual('%s' % self.member, 'Rotarian Michael Palin')
+        self.assertEqual(str(self.member), 'Rotarian Michael Palin')
 
     def test_unicode_without_member_title(self):
         settings.MEMBER_TITLE = None
-        self.assertEqual('%s' % self.member, 'Michael Palin')
+        self.assertEqual(str(self.member), 'Michael Palin')
 
     def test_get_formal_name(self):
         self.assertEqual(self.member.get_formal_name(),
@@ -60,7 +60,7 @@ class TestGuest(TestCase):
             first_name='Eric',
             last_name='Idle'
         )
-        self.assertEqual('%s' % guest, 'Mr Eric Idle')
+        self.assertEqual(str(guest), 'Mr Eric Idle')
 
 
 class TestMeeting(TestCase):
@@ -72,7 +72,7 @@ class TestMeeting(TestCase):
             date=date(2014, 3, 22),
             name='Meeting'
         )
-        self.assertEqual('%s' % meeting, 'Meeting (March 2014)')
+        self.assertEqual(str(meeting), 'Meeting (March 2014)')
 
 
 class TestUser(TestCase):

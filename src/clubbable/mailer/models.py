@@ -20,5 +20,5 @@ class MessageTemplate(models.Model):
 
     def get_subject_or_docs(self):
         if self.docs:
-            return ', '.join(['%s' % n for n in self.docs])
+            return ', '.join([str(n) for n in self.docs])
         return self.subject

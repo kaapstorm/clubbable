@@ -14,7 +14,7 @@ class Folder(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return '%s' % self.name
+        return self.name
 
 
 class Document(models.Model):

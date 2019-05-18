@@ -83,7 +83,7 @@ def transform_date(mdb_date):
             yyyy = str(last_c) + yy
         else:
             yyyy = str(now.year // 100) + yy
-        return '%s-%s-%s' % (yyyy, mm, dd)
+        return f'{yyyy}-{mm}-{dd}'
 
     return MDB_DATE_RE.sub(to_iso_date, mdb_date)
 

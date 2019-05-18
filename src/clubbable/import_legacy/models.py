@@ -8,7 +8,7 @@ class Office(models.Model):
     office = models.CharField(max_length=50)
     
     def __str__(self):
-        return '%s' % self.office
+        return self.office
 
     class Meta:
         db_table = 'owl_offices'
@@ -54,7 +54,7 @@ class Member(models.Model):
     is_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return 'Owl %s %s' % (self.common_name, self.surname)
+        return f'Owl {self.common_name} {self.surname}'
 
     class Meta:
         db_table = 'owl_members'
@@ -77,7 +77,7 @@ class Cartoon(models.Model):
     filesize = models.PositiveIntegerField()
     
     def __str__(self):
-        return '%s' % self.title
+        return self.title
 
     class Meta:
         db_table = 'cartoons'
@@ -100,7 +100,7 @@ class Photograph(models.Model):
     filesize = models.PositiveIntegerField()
     
     def __str__(self):
-        return '%s' % self.title
+        return self.title
 
     class Meta:
         db_table = 'photographs'
@@ -124,7 +124,7 @@ class User(models.Model):
     )
     
     def __str__(self):
-        return '(User) %s' % self.fullname
+        return f'(User) {self.fullname}'
 
     class Meta:
         db_table = 'users'
@@ -136,7 +136,7 @@ class Group(models.Model):
     users = models.ManyToManyField(User, db_table='group_users')
     
     def __str__(self):
-        return '%s' % self.name
+        return self.name
 
     class Meta:
         db_table = 'groups'
@@ -150,7 +150,7 @@ class Notice(models.Model):
     read_by = models.ManyToManyField(User, through='NoticeReadBy')
     
     def __str__(self):
-        return '%s' % self.description
+        return self.description
 
     class Meta:
         db_table = 'notices'
@@ -176,7 +176,7 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return '%s (%s)' % (self.name, self.description)
+        return f'{self.name} ({self.description})'
 
     class Meta:
         db_table = 'documents'

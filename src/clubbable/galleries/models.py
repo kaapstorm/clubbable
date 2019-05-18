@@ -26,7 +26,7 @@ class Gallery(models.Model):
         verbose_name_plural = 'galleries'
 
     def __str__(self):
-        return '%s' % self.name
+        return self.name
 
 
 class Image(models.Model):
@@ -63,11 +63,10 @@ class Image(models.Model):
     @property
     def name(self):
         if self.description:
-            return '%s' % self.description
-        people = ', '.join(('%s' % p
-                            for p in chain(self.members, self.guests)))
+            return self.description
+        people = ', '.join((str(p) for p in chain(self.members, self.guests)))
         if self.meeting:
-            return '%s: %s' % (self.meeting, people)
+            return f'{self.meeting}: {people}'
         return people
 
     @property

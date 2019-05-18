@@ -18,7 +18,7 @@ from django.conf import settings
 from docs.models import Document
 
 
-API_BASE_URL = 'https://api.mailgun.net/v3/%s' % settings.MAILGUN_DOMAIN
+API_BASE_URL = f'https://api.mailgun.net/v3/{settings.MAILGUN_DOMAIN}'
 
 
 class MailerError(Exception):
@@ -69,7 +69,7 @@ def send_doc(to, subject, message, doc_id):
     files = {'attachment': (filename, doc.file.open('rb'), mime_type)}
 
     response = requests.post(
-        '%s/messages' % API_BASE_URL,
+        f'{API_BASE_URL}/messages',
         auth=('api', settings.MAILGUN_API_KEY),
         data=data,
         files=files,

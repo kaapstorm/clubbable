@@ -143,19 +143,19 @@ def import_image(dbx, entry):
 def notify_imported(dropbox_user, mdbs, docs, imgs):
     message = []
     if mdbs:
-        message.append('  - Access database "%s"' % mdbs[0])
+        message.append(f'  - Access database "{mdbs[0]}"')
     if docs:
-        message.append('  - %s documents' % docs)
+        message.append(f'  - {docs} documents')
     if imgs:
-        message.append('  - %s images' % imgs)
+        message.append(f'  - {imgs} images')
     mail_admins(
         'Imported from Dropbox',
-        '%s imported:\n' % dropbox_user + '\n'.join(message)
+        f'{dropbox_user} imported:\n' + '\n'.join(message)
     )
 
 
 def notify_multiple_mdbs(mdbs):
-    mdbs = '\n'.join(('  - %s' % mdb for mdb in mdbs))
+    mdbs = '\n'.join((f'  - {mdb}' for mdb in mdbs))
     mail_admins(
         'Multiple Access databases in Dropbox',
         inspect.cleandoc(f"""

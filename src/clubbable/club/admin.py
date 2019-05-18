@@ -86,7 +86,7 @@ class MemberAdmin(admin.ModelAdmin):
         except Member.profile.RelatedObjectDoesNotExist:
             return None
         link = reverse("admin:club_user_change", args=[user.id])
-        return format_html('<a href="%s">%s</a>' % (link, user))
+        return format_html(f'<a href="{link}">{user}</a>')
     link_to_user.short_description = 'User'
 
 
