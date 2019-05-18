@@ -74,4 +74,5 @@ def send_doc(to, subject, message, doc_id):
         data=data,
         files=files,
     )
-    return response
+    if not 200 <= response.status_code < 300:
+        raise MailerError(f'Sending document failed: {response.content}')
