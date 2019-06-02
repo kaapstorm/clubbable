@@ -109,6 +109,12 @@ class Member(models.Model):
     """
     # Comments refer to the equivalent column in this club's Access database.
     # See module docstring for context.
+
+    MEMBERSHIP_CATEGORIES = [
+        ('O', 'Ordinary member'),
+        ('Z', 'Former member'),
+        ('E', 'External contact'),  # `import_members()` task drops these
+    ]
     id = models.PositiveIntegerField(primary_key=True)  # OwlID
     title = models.CharField(max_length=100, blank=True)  # Title
     initials = models.CharField(max_length=100)  # Initials
@@ -123,7 +129,9 @@ class Member(models.Model):
     # Address5
     # Address6
     year = models.PositiveIntegerField(null=True, blank=True)  # Year
-    # MembershipCategory
+    membership_category = models.CharField(  # MembershipCategory
+        max_length=1, choices=MEMBERSHIP_CATEGORIES, default='O',
+    )
     # Interests -- Not authoritative. Use booleans below instead.
     # PastPresident
     # RegularDiner
