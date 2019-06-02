@@ -27,6 +27,7 @@ ATTRIBUTES = {
         ('post_title', 'PostTitle', False, None),
         ('familiar_name', 'FamiliarName', False, None),
         ('year', 'Year', True, None),
+        ('membership_category', 'MembershipCategory', False, None),
         ('email', 'EmailAddress', False, 'none_to_blank'),
         ('receives_emails', 'ReceivesNoticesElectronically', False, None),
         ('qualification_art', 'Art', False, None),
@@ -101,6 +102,10 @@ def none_to_blank(value):
     return '' if value == '(none)' else value
 
 
+def drop_external_contacts(row):
+    return row['MembershipCategory'] in ('O', 'Z')
+
+
 @shared_task
 def delete_storage_file(filename):
     storage = DefaultStorage()
@@ -129,7 +134,10 @@ def import_mdb(filename):
 
 
 def import_members(filename):
-    return import_table(filename, Member, 'OwlsPersonalDetails', 'OwlID')
+    return import_table(
+        filename, Member, 'OwlsPersonalDetails', 'OwlID',
+        filter_=drop_external_contacts,
+    )
 
 
 def import_guests(filename):
@@ -140,7 +148,7 @@ def import_meetings(filename):
     return import_table(filename, Meeting, 'Events', 'EventNum')
 
 
-def import_table(filename, class_, table, id_, delete=True):
+def import_table(filename, class_, table, id_, delete=True, filter_=None):
     """
     Imports a table from an Access database.
 
@@ -149,6 +157,8 @@ def import_table(filename, class_, table, id_, delete=True):
     :param id_: The name of the primary key field
     :param attributes: A tuple of attribute-column tuples
     :param delete: Delete records not found in Access
+    :param filter_: A function that accepts a row and returns True if
+                    the row should be skipped
     """
     attributes = ATTRIBUTES[class_.__name__]
     start = datetime.now()
@@ -160,6 +170,8 @@ def import_table(filename, class_, table, id_, delete=True):
     upserted = 0
     deleted = 0
     for row in reader:
+        if filter_ and not filter_(row):
+            continue
         try:
             obj = class_.objects.get(pk=row[id_])
         except class_.DoesNotExist:
