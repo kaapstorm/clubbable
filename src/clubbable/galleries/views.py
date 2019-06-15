@@ -21,7 +21,7 @@ class ImageList(LoginRequiredMixin, ListView, ClubbableContextMixin):
         return context_data
 
     def get_queryset(self):
-        return self.get_gallery().image_set.all()
+        return self.get_gallery().image_set.order_by('-added_at').all()
 
 
 @login_required
