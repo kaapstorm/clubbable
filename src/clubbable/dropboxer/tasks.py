@@ -10,7 +10,7 @@ from dropbox import Dropbox
 from dropbox.files import FileMetadata
 from club.models import User
 from clubbable.utils import quickcache
-from docs.models import Folder, Document
+from docs.models import Folder, Document, EXT_TO_DOC_TYPE
 from galleries.models import Gallery, Image
 from import_mdb.tasks import import_mdb
 
@@ -32,6 +32,12 @@ def is_mdb_file(entry):
         isinstance(entry, FileMetadata) and
         entry.name == settings.MDB_FILENAME
     )
+
+
+def drop_ext(filename, exts):
+    if '.' in filename and filename.split('.')[-1].lower() in exts:
+        filename = '.'.join(filename.split('.')[0:-1])
+    return filename
 
 
 @quickcache([])
@@ -119,7 +125,7 @@ def import_document(dbx, entry):
     content_file = ContentFile(content=response.content, name=entry.name)
     document = Document(
         folder=folder,
-        description=entry.name,
+        description=drop_ext(entry.name, EXT_TO_DOC_TYPE),
         dropbox_file_id=entry.id,
         file=UploadedFile(content_file),
     )
@@ -133,7 +139,7 @@ def import_image(dbx, entry):
     content_file = ContentFile(content=response.content, name=entry.name)
     image = Image(
         gallery=gallery,
-        description=entry.name,
+        description=drop_ext(entry.name, ('jpg', 'jpeg')),
         dropbox_file_id=entry.id,
         original=UploadedFile(content_file),
     )

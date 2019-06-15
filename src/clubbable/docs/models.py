@@ -3,6 +3,16 @@ import os
 import posixpath
 from django.db import models
 
+EXT_TO_DOC_TYPE = {
+    'pdf': 'pdf',
+    'doc': 'word',
+    'docx': 'word',
+    'xls': 'excel',
+    'xlsx': 'excel',
+    'ppt': 'powerpoint',
+    'pptx': 'powerpoint',
+    'zip': 'archive',
+}
 
 def _get_upload_path(instance, filename):
     upload_to = f'doc/{instance.folder}/%Y/%m/'
@@ -40,15 +50,5 @@ class Document(models.Model):
         Returns a doc type that can be used for selecting an icon based
         on file extension.
         """
-        doc_types = {
-            'pdf': 'pdf',
-            'doc': 'word',
-            'docx': 'word',
-            'xls': 'excel',
-            'xlsx': 'excel',
-            'ppt': 'powerpoint',
-            'pptx': 'powerpoint',
-            'zip': 'archive',
-        }
         ext = self.file.name.split('.')[-1]
-        return doc_types.get(ext, 'pdf')
+        return EXT_TO_DOC_TYPE.get(ext, 'pdf')
