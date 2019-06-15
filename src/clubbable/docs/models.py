@@ -22,6 +22,7 @@ class Document(models.Model):
     description = models.CharField(max_length=255, blank=True)
     dropbox_file_id = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to=_get_upload_path)
+    added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('description',)
