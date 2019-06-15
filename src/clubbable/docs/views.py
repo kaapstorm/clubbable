@@ -29,7 +29,7 @@ class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
         return context_data
 
     def get_queryset(self):
-        return self.get_folder().document_set.all()
+        return self.get_folder().document_set.order_by('-added_at').all()
 
 
 @user_passes_test(lambda u: u.is_staff)
