@@ -53,6 +53,7 @@ class Image(models.Model):
                                processors=[Thumbnail(200, 100)],
                                format='JPEG',
                                options={'quality': 60})
+    added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('description',)
