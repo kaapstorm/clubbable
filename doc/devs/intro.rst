@@ -13,12 +13,16 @@ Hosting with Heroku
 will need. You will need a database and a Celery broker. The "Heroku Postgres"
 and "Heroku Redis" add-ons would not be bad choices for these. *clubbable* uses
 the Django ORM as a Celery result back-end, so RabbitMQ is also a good choice
-of Celery broker.
+of Celery broker. You may need to set the environment variable ``REDIS_URL``
+to the Redis URL.
 
 Mail is sent with Mailgun directly, so you will not need a Heroku add-on for
 Mailgun.
 
 Follow Heroku `instructions for deployment`_.
+
+If you set the environment variable ``DEPLOY_ENV`` to "heroku", then
+**settings.py** will use django_heroku to configure static files.
 
 Heroku CLI commands to initialise the database and create a superuser are::
 
