@@ -22,9 +22,6 @@ CLUB_NAME=The Pirate's Cove
 # Title to refer to members by. Omit if not applicable.
 MEMBER_TITLE=Captain
 
-# Support importing from legacy database
-IMPORT_LEGACY=False
-
 # Filename of club's Access database. Omit to disable.
 MDB_FILENAME=club.mdb
 
@@ -66,8 +63,6 @@ DEBUG=True
 ALLOWED_HOSTS=["example.com", "www.example.com", "other.example.net"]
 
 DATABASE_URL=sqlite:///clubbable/db/db.sqlite3
-# Omit if IMPORT_LEGACY=False:
-LEGACY_DB_URL=mysql://USER:PASSWORD@HOST:PORT/NAME
 
 # How to store user-uploaded files. Valid values are "S3", "SFTP", "Dropbox",
 # "local". Values are case-sensitive.

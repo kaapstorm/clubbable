@@ -27,9 +27,6 @@ CLUB_NAME = os.environ['CLUB_NAME'].replace('_', ' ')
 # Title by which to refer to members. None if not applicable
 MEMBER_TITLE = os.environ.get('MEMBER_TITLE')
 
-# Support importing from legacy database
-IMPORT_LEGACY = os.environ['IMPORT_LEGACY'].lower() in ('true', 'yes')
-
 # Filename of club's Access database, or `None` to disable
 MDB_FILENAME = os.environ.get('MDB_FILENAME')
 
@@ -97,8 +94,6 @@ INSTALLED_APPS = [
     'import_mdb',
     'mailer',
 ]
-if IMPORT_LEGACY:
-    INSTALLED_APPS.append('import_legacy')
 
 AUTH_USER_MODEL = 'club.User'
 
@@ -143,16 +138,9 @@ TEMPLATES = [
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600)
 }
-if IMPORT_LEGACY:
-    DATABASES['legacy'] = dj_database_url.config(
-        env='LEGACY_DB_URL', conn_max_age=600,
-    )
-    DATABASE_ROUTERS = ['import_legacy.router.LegacyDbRouter']
-
 if os.environ['FILE_STORAGE_TYPE'] == 'S3':
     DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
     AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
