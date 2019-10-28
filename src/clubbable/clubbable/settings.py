@@ -210,15 +210,17 @@ DEFAULT_TAGS[ERROR] = 'warning'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-STATIC_ROOT = os.environ.get('STATIC_ROOT')
-STATIC_URL = os.environ.get('STATIC_URL')
+if 'STATIC_ROOT' in os.environ and 'STATIC_URL' in os.environ:
+    STATIC_ROOT = os.environ['STATIC_ROOT']
+    STATIC_URL = os.environ['STATIC_URL']
 
-REDIS_URL = os.environ.get('REDIS_URL')
+REDIS_URL = os.environ['REDIS_URL']
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower()
-                       in ('true', 'yes'))
+CELERY_ALWAYS_EAGER = (
+    os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower() in ('true', 'yes')
+)
 
 if os.environ['DEPLOY_ENV'] == 'heroku':
     import django_heroku
