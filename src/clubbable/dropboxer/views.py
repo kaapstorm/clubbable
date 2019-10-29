@@ -7,7 +7,6 @@ from functools import wraps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.core.mail import mail_admins
 from django.http import (
     HttpResponseRedirect,
     HttpResponseForbidden,
@@ -136,12 +135,16 @@ def webhook(request):
         return hmac.compare_digest(signature, request_hash)
 
     if request.method == 'GET':
+        logger.info('Dropbox webhook: Challenge request')
         return get_challenge_response(request)
 
     if request.method == 'POST':
+        logger.info('Dropbox webhook: Notification')
         if not verify_signature(request):
+            logger.info('Dropbox webhook: Verification failed')
             return HttpResponseForbidden()
 
+        logger.debug(f'Dropbox webhook: Request body: \n{request.body}')
         notification = json.loads(request.body)
         for account in notification['list_folder']['accounts']:
             dropbox_user = DropboxUser.objects.get_or_none(account=account)
