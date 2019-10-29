@@ -198,9 +198,10 @@ DEFAULT_TAGS[ERROR] = 'warning'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-if 'STATIC_ROOT' in os.environ and 'STATIC_URL' in os.environ:
-    STATIC_ROOT = os.environ['STATIC_ROOT']
+if 'STATIC_URL' in os.environ:
     STATIC_URL = os.environ['STATIC_URL']
+if 'STATIC_ROOT' in os.environ:
+    STATIC_ROOT = os.environ['STATIC_ROOT']
 
 REDIS_URL = os.environ['REDIS_URL']
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
