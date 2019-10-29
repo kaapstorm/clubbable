@@ -27,26 +27,6 @@ class MailerError(Exception):
 
 @shared_task
 def send_doc(to, subject, message, doc_id):
-
-    def get_recipients_vars(to_):
-        if to_.isdigit():
-            group = Group.objects.get(pk=to_)
-            users = group.user_set.all()
-        elif to_ == 'everyone':
-            users = User.objects.all()
-        elif '@' in to_:
-            # "myself" was passed as request.user.email
-            users = [User.objects.get(email=to_)]
-        else:
-            raise MailerError(f'Unrecognised recipient "{to_}"')
-        recipients = []
-        variables = {}
-        for user in users:
-            if user.receives_emails():
-                recipients.append(user.email)
-                variables[user.email] = {'full_name': user.get_full_name()}
-        return recipients, variables
-
     text = cleandoc(message)
     html = markdown(text)
     recipients, variables = get_recipients_vars(to)
@@ -76,3 +56,23 @@ def send_doc(to, subject, message, doc_id):
     )
     if not 200 <= response.status_code < 300:
         raise MailerError(f'Sending document failed: {response.content}')
+
+
+def get_recipients_vars(to_):
+    if to_.isdigit():
+        group = Group.objects.get(pk=to_)
+        users = group.user_set.all()
+    elif to_ == 'everyone':
+        users = User.objects.all()
+    elif '@' in to_:
+        # "myself" was passed as request.user.email
+        users = [User.objects.get(email=to_)]
+    else:
+        raise MailerError(f'Unrecognised recipient "{to_}"')
+    recipients = []
+    variables = {}
+    for user in users:
+        if user.receives_emails():
+            recipients.append(user.email)
+            variables[user.email] = {'full_name': user.get_full_name()}
+    return recipients, variables
