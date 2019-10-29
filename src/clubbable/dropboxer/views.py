@@ -15,6 +15,7 @@ from django.http import (
 )
 from django.http.request import split_domain_port
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from dropbox import DropboxOAuth2Flow
 from dropbox.oauth import (
     BadRequestException,
@@ -117,6 +118,7 @@ def check_dropbox(request):
     return HttpResponseRedirect(reverse('dashboard'))
 
 
+@csrf_exempt
 def webhook(request):
     """
     Dropbox notifies this view when files have changed
@@ -128,11 +130,13 @@ def webhook(request):
         return response
 
     def verify_signature(request_):
-        signature = request_.headers.get('X-Dropbox-Signature')
-        request_hash = hmac.new(
-            settings.DROPBOX_APP_SECRET, request_.body, hashlib.sha256
-        ).hexdigest()
-        return hmac.compare_digest(signature, request_hash)
+        if 'X-Dropbox-Signature' not in request_.headers:
+            return False
+        signature = request_.headers['X-Dropbox-Signature']
+        secret = settings.DROPBOX_APP_SECRET.encode('ascii')
+        request_hash = hmac.new(secret, request_.body, hashlib.sha256)
+        hash_digest = request_hash.hexdigest()
+        return hmac.compare_digest(signature, hash_digest)
 
     if request.method == 'GET':
         logger.info('Dropbox webhook: Challenge request')
