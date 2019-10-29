@@ -29,6 +29,10 @@ MEMBER_TITLE = os.environ.get('MEMBER_TITLE')
 
 # Filename of club's Access database, or `None` to disable
 MDB_FILENAME = os.environ.get('MDB_FILENAME')
+if MDB_FILENAME:
+    MDB_DUMP_URL = os.environ['MDB_DUMP_URL']
+    MDB_DUMP_USERNAME = os.environ['MDB_DUMP_USERNAME']
+    MDB_DUMP_PASSWORD = os.environ['MDB_DUMP_PASSWORD']
 
 # Details for fetching files from Dropbox
 DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
@@ -58,21 +62,46 @@ ADMINS = [tuple(pair) for pair in json.loads(os.environ['ADMINS'])]
 EMAIL_SUBJECT_PREFIX = os.environ['EMAIL_SUBJECT_PREFIX'] + ' '
 SERVER_EMAIL = os.environ['SERVER_EMAIL']
 
+if os.environ['FILE_STORAGE_TYPE'] == 'S3':
+    DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_DEFAULT_ACL = None
+elif os.environ['FILE_STORAGE_TYPE'] == 'SFTP':
+    DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+    SFTP_STORAGE_HOST=os.environ['SFTP_STORAGE_HOST']
+    SFTP_STORAGE_ROOT=os.environ['SFTP_STORAGE_ROOT']
+    SFTP_STORAGE_PARAMS=json.loads(os.environ['SFTP_STORAGE_PARAMS'])
+elif os.environ['FILE_STORAGE_TYPE'] == 'Dropbox':
+    DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+    DROPBOX_OAUTH2_TOKEN=os.environ['DROPBOX_OAUTH2_TOKEN']
+    DROPBOX_ROOT_PATH=os.environ['DROPBOX_ROOT_PATH']
+elif os.environ['FILE_STORAGE_TYPE'] == 'local':
+    # Absolute path to the directory that will hold user-uploaded files:
+    MEDIA_ROOT = os.environ['MEDIA_ROOT']
+    # URL that handles the media served from MEDIA_ROOT:
+    MEDIA_URL = os.environ['MEDIA_URL']
+
+# Change the tag for error messages to "warning" so that it works nicely
+# with Bootstrap classes
+DEFAULT_TAGS[ERROR] = 'warning'
+
+REDIS_URL = os.environ['REDIS_URL']
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ALWAYS_EAGER = (
+    os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower() in ('true', 'yes')
+)
+
+
 # ===============
 # Django settings
 # ===============
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG'].lower() in ('true', 'yes')
-
-ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS'])
-
 
 # Application definition
 
@@ -136,32 +165,6 @@ TEMPLATES = [
     }
 ]
 
-# Database
-# https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600)
-}
-if os.environ['FILE_STORAGE_TYPE'] == 'S3':
-    DEFAULT_FILE_STORAGE = 'clubbable.storage.CustomS3Boto3Storage'
-    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-    AWS_DEFAULT_ACL = None
-elif os.environ['FILE_STORAGE_TYPE'] == 'SFTP':
-    DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
-    SFTP_STORAGE_HOST=os.environ['SFTP_STORAGE_HOST']
-    SFTP_STORAGE_ROOT=os.environ['SFTP_STORAGE_ROOT']
-    SFTP_STORAGE_PARAMS=json.loads(os.environ['SFTP_STORAGE_PARAMS'])
-elif os.environ['FILE_STORAGE_TYPE'] == 'Dropbox':
-    DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
-    DROPBOX_OAUTH2_TOKEN=os.environ['DROPBOX_OAUTH2_TOKEN']
-    DROPBOX_ROOT_PATH=os.environ['DROPBOX_ROOT_PATH']
-elif os.environ['FILE_STORAGE_TYPE'] == 'local':
-    # Absolute path to the directory that will hold user-uploaded files:
-    MEDIA_ROOT = os.environ['MEDIA_ROOT']
-    # URL that handles the media served from MEDIA_ROOT:
-    MEDIA_URL = os.environ['MEDIA_URL']
-
 CACHES = {
     'locmem': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -172,22 +175,12 @@ CACHES = {
     }
 }
 
-if MDB_FILENAME:
-    MDB_DUMP_URL = os.environ['MDB_DUMP_URL']
-    MDB_DUMP_USERNAME = os.environ['MDB_DUMP_USERNAME']
-    MDB_DUMP_PASSWORD = os.environ['MDB_DUMP_PASSWORD']
-
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
-
 LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en-US')
-
 TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
@@ -211,6 +204,18 @@ CELERY_ALWAYS_EAGER = (
     os.environ.get('CELERY_ALWAYS_EAGER', 'false').lower() in ('true', 'yes')
 )
 
+ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS'])
+
 if os.environ['DEPLOY_ENV'] == 'heroku':
     import django_heroku
-    django_heroku.settings(locals(), allowed_hosts=False, databases=False)
+    django_heroku.settings(locals(), allowed_hosts=False)
+
+else:
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = os.environ['SECRET_KEY']
+
+    # Database
+    # https://docs.djangoproject.com/en/dev/ref/settings/#databases
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
