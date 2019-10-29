@@ -26,7 +26,7 @@ class MailerError(Exception):
 
 
 @shared_task
-def send_doc(to, subject, message, doc_id):
+def send_message(to, subject, message, doc_id=None):
     text = cleandoc(message)
     html = markdown(text)
     recipients, variables = get_recipients_vars(to)
@@ -43,10 +43,13 @@ def send_doc(to, subject, message, doc_id):
     if settings.BOUNCE_ADDRESS:
         data['return-path'] = settings.BOUNCE_ADDRESS
 
-    doc = Document.objects.get(pk=doc_id)
-    filename = doc.file.name.split(os.sep)[-1]
-    mime_type = magic.from_buffer(doc.file.read(1024), mime=True)
-    files = {'attachment': (filename, doc.file.open('rb'), mime_type)}
+    if doc_id:
+        doc = Document.objects.get(pk=doc_id)
+        filename = doc.file.name.split(os.sep)[-1]
+        mime_type = magic.from_buffer(doc.file.read(1024), mime=True)
+        files = {'attachment': (filename, doc.file.open('rb'), mime_type)}
+    else:
+        files = None
 
     response = requests.post(
         f'{API_BASE_URL}/messages',
@@ -55,7 +58,7 @@ def send_doc(to, subject, message, doc_id):
         files=files,
     )
     if not 200 <= response.status_code < 300:
-        raise MailerError(f'Sending document failed: {response.content}')
+        raise MailerError(f'Sending message failed: {response.content}')
 
 
 def get_recipients_vars(to_):

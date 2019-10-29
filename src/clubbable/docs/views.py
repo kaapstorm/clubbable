@@ -12,7 +12,7 @@ from django.views.generic import ListView
 
 from club.views import get_context_data, ClubbableContextMixin
 from docs.models import Document, Folder
-from mailer.tasks import send_doc
+from mailer.tasks import send_message
 
 
 class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
@@ -37,7 +37,7 @@ def send(request, folder_id, pk):
     doc = get_object_or_404(Document, folder__id=folder_id, pk=pk)
     if request.method == 'POST':
         to = request.POST['to']
-        send_doc.delay(
+        send_message.delay(
             to=request.user.email if to == 'myself' else to,
             subject=request.POST['subject'],
             message=request.POST['text'],
