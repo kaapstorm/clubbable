@@ -175,6 +175,22 @@ CACHES = {
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en-US')
@@ -219,3 +235,8 @@ else:
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
+
+LOGGING['loggers']['dropboxer'] = {
+    'handlers': ['console'],
+    'level': 'DEBUG',
+}
