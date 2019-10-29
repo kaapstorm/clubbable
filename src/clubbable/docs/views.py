@@ -1,10 +1,6 @@
-from collections import namedtuple
-from itertools import chain
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -12,7 +8,7 @@ from django.views.generic import ListView
 
 from club.views import get_context_data, ClubbableContextMixin
 from docs.models import Document, Folder
-from mailer.tasks import send_message
+from mailer.tasks import send_message, get_email_groups
 
 
 class DocList(LoginRequiredMixin, ListView, ClubbableContextMixin):
@@ -51,15 +47,6 @@ def send(request, folder_id, pk):
     context_data['doc'] = doc
     context_data['groups'] = get_email_groups()
     return render(request, 'docs/send_doc.html', context_data)
-
-
-def get_email_groups():
-    SpecialGroup = namedtuple('SpecialGroup', 'id name')
-    return chain(
-        [SpecialGroup('myself', 'Myself')],
-        Group.objects.all(),
-        [SpecialGroup('everyone', 'Everyone')],
-    )
 
 
 @login_required

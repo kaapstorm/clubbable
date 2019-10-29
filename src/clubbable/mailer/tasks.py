@@ -7,7 +7,10 @@ Start the Celery worker with ::
 """
 import json
 import os
+from collections import namedtuple
 from inspect import cleandoc
+from itertools import chain
+
 import magic
 from celery import shared_task
 import requests
@@ -79,3 +82,12 @@ def get_recipients_vars(to_):
             recipients.append(user.email)
             variables[user.email] = {'full_name': user.get_full_name()}
     return recipients, variables
+
+
+def get_email_groups():
+    SpecialGroup = namedtuple('SpecialGroup', 'id name')
+    return chain(
+        [SpecialGroup('myself', 'Myself')],
+        Group.objects.all(),
+        [SpecialGroup('everyone', 'Everyone')],
+    )
