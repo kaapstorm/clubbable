@@ -122,6 +122,7 @@ INSTALLED_APPS = [
     'galleries',
     'import_mdb',
     'mailer',
+    'pages',
 ]
 
 AUTH_USER_MODEL = 'club.User'
