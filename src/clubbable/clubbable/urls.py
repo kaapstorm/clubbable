@@ -7,16 +7,14 @@ from django.contrib.auth import (
 from django.urls import path, include, re_path
 from django.views.static import serve
 
-from club.views import (
-    LandingView,
-    dashboard,
-)
+from club.views import dashboard
 from club import urls as club_urls
 from docs import urls as docs_urls
 from dropboxer import urls as dropbox_urls
 from galleries import urls as galleries_urls
 from import_mdb import urls as import_mdb_urls
 from mailer import urls as mailer_urls
+from pages.views import LandingView, PageView
 
 admin.autodiscover()
 
@@ -29,6 +27,7 @@ urlpatterns = [
     path('import_mdb/', include(import_mdb_urls)),
     path('message/', include(mailer_urls)),
 
+    path('page/<int:index>/', PageView),
     path('accounts/login/', LandingView.as_view(), name='login'),
     path('accounts/logout/',
          auth_views.LogoutView.as_view(

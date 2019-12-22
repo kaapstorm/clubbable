@@ -1,12 +1,9 @@
-import yaml
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import ContextMixin
-from markdown import markdown
 
 from club.models import Member
 
@@ -28,21 +25,6 @@ class ClubbableContextMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(get_context_data(self.request))
-        return context
-
-
-class LandingView(LoginView, ClubbableContextMixin):
-    template_name = 'club/landing.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        with open(settings.BASE_DIR + '/clubbable/landing_page.yaml') as file:
-            data = yaml.load(file)
-        context.update({
-            'heading': data['heading'],
-            'image': data['image'],
-            'content_html': markdown(data['content_markdown']),
-        })
         return context
 
 
