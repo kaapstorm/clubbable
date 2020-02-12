@@ -19,11 +19,12 @@ For Debian derivatives like Ubuntu, install system packages::
 
     $ sudo apt-get install python-dev libjpeg-dev libpng12-dev
 
-Install Python requirements::
+Install Python requirements. (Using a Python virtual environment is
+recommended)::
 
-    $ sudo pip install -r requirements.txt
+    $ pip install -r requirements.txt
 
-Create local configuration file::
+Create a configuration file for your local environment::
 
     $ cp env/example env/local  # (where "local" is an arbitrary name)
 
@@ -39,6 +40,19 @@ Start the development web server::
 
     $ cd src/clubbable
     $ ./manage.py runserver
+
+If required, you can run all services in their own shells::
+
+    redis $ docker-compose up
+    celery $ celery worker --workdir src/clubbable -A clubbable -l info
+
+dumpmdb is a service for dumping database tables::
+
+    dumpmdb $ docker run -p 8001:8001 \
+                -e PORT=8001 \
+                -e MDB_DUMP_USERNAME=jbloggs \
+                -e MDB_DUMP_PASSWORD=secret \
+                dumpmdb:latest
 
 
 Documentation
