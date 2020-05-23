@@ -14,7 +14,7 @@ Contents:
    :maxdepth: 2
 
    members/intro
-   admins/intro
+   admins/index
    devs/intro
 
 
