@@ -16,7 +16,7 @@ psycopg2-binary==2.7.6.1
 pytest==4.6.3
 pytest-django==3.5.0
 python-magic==0.4.15
-PyYAML==5.1
+PyYAML==5.4
 quickcache==0.5.1
 redis==3.2.1
 six==1.11.0
